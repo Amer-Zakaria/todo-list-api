@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("TodoList-DATABASE_URL")
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  name              String
+  password          String
+  todos             Todo[]
+  emailVerification EmailVerification?
+}
+
+model EmailVerification {
+  id         Int      @id @default(autoincrement())
+  isVerified Boolean  @default(false)
+  code       String
+  expiresAt  DateTime
+  userId     Int      @unique
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+enum TodoStatus {
+  ONGOING
+  SUCCESSFUL
+  CANCELED
+}
+
+model Todo {
+  id      Int        @id @default(autoincrement())
+  addedAt DateTime   @default(now())
+  details String
+  status  TodoStatus @default(ONGOING)
+  userId  Int
+  user    User       @relation(fields: [userId], references: [id])
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Todo List API",
+  "port": 3000,
+  "jwtPrivateKey": "",
+  "db": {
+    "uri": ""
+  },
+  "emailPass": ""
+}

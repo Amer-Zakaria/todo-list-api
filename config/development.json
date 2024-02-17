@@ -1,0 +1,8 @@
+{
+  "name": "Todo List API - development",
+  "stack": true,
+  "jwtPrivateKey": "1234",
+  "db": {
+    "uri": ""
+  }
+}
