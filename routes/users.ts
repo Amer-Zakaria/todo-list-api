@@ -119,4 +119,34 @@ router.post(
   }
 );
 
+router.post("/regenerate-code", authz, async (req, res) => {
+  const emailVerification = await prisma.emailVerification.findUnique({
+    where: { userId: res.locals.user.id },
+  });
+
+  if (emailVerification?.isVerified)
+    return res.status(400).json({ message: "Email is already verified." });
+
+  const code = generateRandomCode(6);
+  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); //after two hours from now
+  await prisma.emailVerification.update({
+    where: { userId: res.locals.user.id },
+    data: { code, expiresAt },
+  });
+
+  await transporter.sendMail({
+    from: "amerzkfe1234@gmail.com",
+    to: res.locals.user.email,
+    subject: "Email Verification",
+    html: `
+        <p>
+          Thank you for choosing our service.
+          Your verification code is: <strong>${code}</strong>.
+          Note: it's only valid for 2 hours.
+        </p>`,
+  });
+
+  res.json();
+});
+
 export default router;
