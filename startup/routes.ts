@@ -3,6 +3,7 @@ import error from "../middleware/error";
 import todos from "../routes/todos";
 import users from "../routes/users";
 import auth from "../routes/auth";
+import resetPassword from "../routes/passwordReset";
 import Config from "config";
 
 module.exports = function (app: Express) {
@@ -12,6 +13,7 @@ module.exports = function (app: Express) {
   app.use("/api/todos", todos);
   app.use("/api/users", users);
   app.use("/api/auth", auth);
+  app.use("/api/reset-password", resetPassword);
 
   app.use(error);
 };

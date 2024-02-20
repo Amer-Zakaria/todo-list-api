@@ -1,4 +1,6 @@
-export default function generateRandomCode(length: number): string {
+import { codeLength as length } from "../schemas/user";
+
+export default function generateRandomCode(): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let code = "";

@@ -11,21 +11,13 @@ datasource db {
 }
 
 model User {
-  id                Int                @id @default(autoincrement())
-  email             String             @unique
-  name              String
-  password          String
-  todos             Todo[]
-  emailVerification EmailVerification?
-}
-
-model EmailVerification {
-  id         Int      @id @default(autoincrement())
-  isVerified Boolean  @default(false)
-  code       String
-  expiresAt  DateTime
-  userId     Int      @unique
-  user       User     @relation(fields: [userId], references: [id])
+  id                    Int                    @id @default(autoincrement())
+  email                 String                 @unique
+  name                  String
+  password              String
+  todos                 Todo[]
+  emailVerification     EmailVerification?
+  ResetPasswordRequests ResetPasswordRequest[]
 }
 
 enum TodoStatus {
@@ -41,4 +33,21 @@ model Todo {
   status  TodoStatus @default(ONGOING)
   userId  Int
   user    User       @relation(fields: [userId], references: [id])
+}
+
+model EmailVerification {
+  id         Int      @id @default(autoincrement())
+  isVerified Boolean  @default(false)
+  code       String
+  expiresAt  DateTime
+  userId     Int      @unique
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model ResetPasswordRequest {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String   @unique
+  expiresAt DateTime
+  user      User?    @relation(fields: [email], references: [email])
 }

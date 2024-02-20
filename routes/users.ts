@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import prisma from "./../prisma/client";
 import validateReq from "../middleware/validateReq";
-import validateUser, { validateVerifyEmail } from "../schemas/user";
+import validateUser, { expiresAt, validateVerifyEmail } from "../schemas/user";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/generateAuthToken";
 import generateRandomCode from "../utils/GenerateRandomCode";
@@ -22,7 +22,7 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
 
   //Creating the user & catching the error if the email is not unique
   let isEmailUnique = true;
-  const code = generateRandomCode(6);
+  const code = generateRandomCode();
   const createdUser = await prisma.user
     .create({
       data: {
@@ -30,7 +30,7 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
           create: {
             //it runs as a transaction alongside the creation of the user
             code,
-            expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000), //after two hours from now
+            expiresAt: expiresAt(), //after two hours from now
           },
         },
         ...req.body,
@@ -64,7 +64,9 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
       html: `
         <p>
           Thank you for choosing our service.
+          <br />
           Your verification code is: <strong>${code}</strong>.
+          <br />
           Note: it's only valid for 2 hours.
         </p>`,
     });
@@ -127,11 +129,10 @@ router.post("/regenerate-code", authz, async (req, res) => {
   if (emailVerification?.isVerified)
     return res.status(400).json({ message: "Email is already verified." });
 
-  const code = generateRandomCode(6);
-  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000); //after two hours from now
+  const code = generateRandomCode();
   await prisma.emailVerification.update({
     where: { userId: res.locals.user.id },
-    data: { code, expiresAt },
+    data: { code, expiresAt: expiresAt() },
   });
 
   await transporter.sendMail({
@@ -141,7 +142,9 @@ router.post("/regenerate-code", authz, async (req, res) => {
     html: `
         <p>
           Thank you for choosing our service.
+          <br />
           Your verification code is: <strong>${code}</strong>.
+          <br />
           Note: it's only valid for 2 hours.
         </p>`,
   });
