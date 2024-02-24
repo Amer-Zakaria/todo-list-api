@@ -2,7 +2,6 @@
     "port": "TodoList-Port",
     "jwtPrivateKey": "TodoList-JWT_PRIVATE_KEY",
     "db": {
-        "TodoList-DATABASE_URL": "TodoList-URI"
     },
     "emailPass": "TodoList-EMAIL_PASS"
 }
