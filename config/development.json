@@ -1,5 +1,6 @@
 {
   "name": "Todo List API - development",
   "stack": true,
+  "origin": "http://localhost:3000",
   "jwtPrivateKey": "1234"
 }

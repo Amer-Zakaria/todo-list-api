@@ -2,7 +2,14 @@
     "port": "TodoList-Port",
     "jwtPrivateKey": "TodoList-JWT_PRIVATE_KEY",
     "db": {
+        "uri": "TodoList-DATABASE_URL"
     },
-    "emailPass": "TodoList-EMAIL_PASS"
+    "mailer": {
+        "emailPass": "TodoList-EMAIL_PASS"
+    },
+    "google": {
+        "clientId": "TodoList-GOOGLE_CLIENT_ID",
+        "clientSecret": "TodoList-GOOGLE_CLIENT_SECRET"
+    }
 }
   

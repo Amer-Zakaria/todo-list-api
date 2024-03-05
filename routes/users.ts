@@ -1,7 +1,11 @@
 import express, { Request, Response } from "express";
 import prisma from "./../prisma/client";
 import validateReq from "../middleware/validateReq";
-import validateUser, { expiresAt, validateVerifyEmail } from "../schemas/user";
+import validateUser, {
+  emailValidation,
+  expiresAt,
+  validateVerifyEmail,
+} from "../schemas/user";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/generateAuthToken";
 import generateRandomCode from "../utils/GenerateRandomCode";
@@ -9,6 +13,9 @@ import { logger, transporter } from "..";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
 import viewUser from "../utils/viewUser";
 import authz from "./../middleware/authz";
+import Config from "config";
+import jwt from "jsonwebtoken";
+import getGoogleOAuthTokens from "../utils/getGoogleOAuthTokens";
 
 const router = express.Router();
 
@@ -58,7 +65,7 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: "amerzkfe1234@gmail.com",
+      from: Config.get("mailer.email"),
       to: req.body.email,
       subject: "Email Verification",
       html: `
@@ -136,7 +143,7 @@ router.post("/regenerate-code", authz, async (req, res) => {
   });
 
   await transporter.sendMail({
-    from: "amerzkfe1234@gmail.com",
+    from: Config.get("mailer.email"),
     to: res.locals.user.email,
     subject: "Email Verification",
     html: `
@@ -150,6 +157,54 @@ router.post("/regenerate-code", authz, async (req, res) => {
   });
 
   res.json();
+});
+
+router.get("/oauth/google", async (req, res) => {
+  // get the code from qs
+  const code = req.query.code as string;
+
+  // get the id and access token with the code
+  const { id_token, access_token } = await getGoogleOAuthTokens({ code });
+  console.log({ id_token, access_token });
+
+  // get user with tokens
+  // I'm getting the token from google, so I gurntee that It have been signed by Google, I can decode immediatly
+  const {
+    email,
+    name,
+    verified_email: isVerifedGoogleEmail,
+  } = jwt.decode(id_token) as jwt.JwtPayload;
+
+  if (isVerifedGoogleEmail) {
+    return res.status(403).send("Google account is not verified");
+  }
+
+  // upsert the user
+  const result = await prisma.user.upsert({
+    where: {
+      email, //insert if it doesn't exist
+    } /* the client maybe logged through the Todo-list app mechanism so the client info will be updated,
+      but the cilent still have his password and he can sign-in the way he likes
+    */,
+    update: {
+      name,
+      emailVerification: { update: { isVerified: true } }, //weather the client logged in through the app or Google, his email now verified
+    },
+    create: {
+      name,
+      email,
+      emailVerification: {
+        create: { isVerified: true, expiresAt: new Date(), code: "" },
+      },
+    }, //weather the client logged in through the app or Google, his email now verified
+    include: { emailVerification: true },
+  });
+
+  //create an token
+  const token = generateAuthToken(<IUserWithVerification>result);
+
+  // redirect back to client
+  res.redirect(`${Config.get("origin")}?token=${token}`);
 });
 
 export default router;

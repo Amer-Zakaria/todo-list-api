@@ -8,7 +8,7 @@ module.exports = () =>
     port: 465,
     secure: true,
     auth: {
-      user: "amerzkfe1234@gmail.com",
-      pass: Config.get("emailPass"),
+      user: Config.get("mailer.email"),
+      pass: Config.get("mailer.emailPass"),
     },
   });

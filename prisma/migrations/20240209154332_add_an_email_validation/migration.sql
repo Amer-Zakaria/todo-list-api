@@ -21,7 +21,7 @@ CREATE TABLE `emailVerification` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateIndex
-CREATE UNIQUE INDEX `Todo_userId_key` ON `Todo`(`userId`);
+-- CREATE UNIQUE INDEX `Todo_userId_key` ON `Todo`(`userId`);
 
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_emailVerificationId_fkey` FOREIGN KEY (`emailVerificationId`) REFERENCES `emailVerification`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

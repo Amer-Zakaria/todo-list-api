@@ -9,6 +9,7 @@ import {
 import generateRandomCode from "./../utils/GenerateRandomCode";
 import { transporter } from "..";
 import bcrypt from "bcrypt";
+import Config from "config";
 
 const router = express.Router();
 
@@ -47,7 +48,7 @@ router.post(
 
     //send an email with the code
     await transporter.sendMail({
-      from: "amerzkfe1234@gmail.com",
+      from: Config.get("mailer.email"),
       to: req.body.email,
       subject: "Reset Password Code",
       html: `

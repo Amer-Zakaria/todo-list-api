@@ -2,5 +2,17 @@
   "name": "Todo List API",
   "port": 3000,
   "jwtPrivateKey": "",
-  "emailPass": ""
+  "origin": "http://localhost:3000",
+  "mailer": {
+    "email": "amerzkfe1234@gmail.com",
+    "emailPass": ""
+  },
+  "db": {
+    "uri": ""
+  },
+  "google": {
+    "redirectUri": "http://localhost:3001/api/users/oauth/google",
+    "clientId": "",
+    "clientSecret": ""
+  }
 }

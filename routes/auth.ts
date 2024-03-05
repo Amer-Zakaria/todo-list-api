@@ -23,17 +23,21 @@ router.post(
     //validating the email
     if (!user) {
       res.status(400).json({
-        message: "Incorrect Email or Password",
+        message: "Incorrect Email or Password.",
       });
       return;
     }
+    if (!user.password)
+      return res.status(400).json({
+        message: "This is a Google account, please continue with Google.",
+      });
     const isValidePassword = await bcrypt.compare(
       userCredentials.password,
       user.password
     );
     if (!isValidePassword) {
       res.status(400).json({
-        message: "Incorrect Email or Password",
+        message: "Incorrect Email or Password.",
       });
       return;
     }

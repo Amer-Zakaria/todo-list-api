@@ -1,4 +1,4 @@
-import config from "config";
+import Config from "config";
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
@@ -11,7 +11,7 @@ export default function authz(
   if (!token) return res.status(401).send("Access denied. No token provided.");
 
   try {
-    const decoded = jwt.verify(token, config.get("jwtPrivateKey"));
+    const decoded = jwt.verify(token, Config.get("jwtPrivateKey"));
     res.locals.user = decoded;
     next();
   } catch (ex) {
