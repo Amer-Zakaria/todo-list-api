@@ -94,6 +94,7 @@ router.post(
 
     if (!user || !user.emailVerification) throw new Error();
 
+    //This also prevent users who signed-in using Google OAuth from accessing this route
     if (user.emailVerification.isVerified)
       return res.status(400).json({ message: "Email is already verified." });
 
@@ -133,6 +134,7 @@ router.post("/regenerate-code", authz, async (req, res) => {
     where: { userId: res.locals.user.id },
   });
 
+  //This also prevent users who signed-in using Google OAuth from accessing this route
   if (emailVerification?.isVerified)
     return res.status(400).json({ message: "Email is already verified." });
 
@@ -163,48 +165,54 @@ router.get("/oauth/google", async (req, res) => {
   // get the code from qs
   const code = req.query.code as string;
 
-  // get the id and access token with the code
-  const { id_token, access_token } = await getGoogleOAuthTokens({ code });
-  console.log({ id_token, access_token });
+  try {
+    // get the id and access token with the code
+    const { id_token, access_token } = await getGoogleOAuthTokens({ code });
+    console.log({ id_token, access_token });
 
-  // get user with tokens
-  // I'm getting the token from google, so I gurntee that It have been signed by Google, I can decode immediatly
-  const {
-    email,
-    name,
-    verified_email: isVerifedGoogleEmail,
-  } = jwt.decode(id_token) as jwt.JwtPayload;
+    // get user with tokens
+    // I'm getting the token from google, so I gurntee that It have been signed by Google, I can decode immediatly
+    const {
+      email,
+      name,
+      verified_email: isVerifedGoogleEmail,
+    } = jwt.decode(id_token) as jwt.JwtPayload;
 
-  if (isVerifedGoogleEmail) {
-    return res.status(403).send("Google account is not verified");
-  }
+    if (isVerifedGoogleEmail) {
+      return res.status(403).send("Google account is not verified");
+    }
 
-  // upsert the user
-  const result = await prisma.user.upsert({
-    where: {
-      email, //insert if it doesn't exist
-    } /* the client maybe logged through the Todo-list app mechanism so the client info will be updated,
+    // upsert the user
+    const result = await prisma.user.upsert({
+      where: {
+        email, //insert if it doesn't exist
+      } /* the client maybe logged through the Todo-list app mechanism so the client info will be updated,
       but the cilent still have his password and he can sign-in the way he likes
     */,
-    update: {
-      name,
-      emailVerification: { update: { isVerified: true } }, //weather the client logged in through the app or Google, his email now verified
-    },
-    create: {
-      name,
-      email,
-      emailVerification: {
-        create: { isVerified: true, expiresAt: new Date(), code: "" },
+      update: {
+        name,
+        emailVerification: { update: { isVerified: true } }, //weather the client logged in through the app or Google, his email now verified
       },
-    }, //weather the client logged in through the app or Google, his email now verified
-    include: { emailVerification: true },
-  });
+      create: {
+        name,
+        email,
+        emailVerification: {
+          create: { isVerified: true, expiresAt: new Date(), code: "" },
+        },
+      }, //weather the client logged in through the app or Google, his email now verified
+      include: { emailVerification: true },
+    });
 
-  //create an token
-  const token = generateAuthToken(<IUserWithVerification>result);
+    //create an token
+    const token = generateAuthToken(<IUserWithVerification>result);
 
-  // redirect back to client
-  res.redirect(`${Config.get("origin")}?token=${token}`);
+    // redirect back to client
+    res.redirect(`${Config.get("origin")}?token=${token}`);
+  } catch (error) {
+    logger.error(error);
+    //TODO: make an error page for this
+    res.status(500).send("Something went wrong.");
+  }
 });
 
 export default router;

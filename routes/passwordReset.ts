@@ -30,6 +30,14 @@ router.post(
         .json({ email: `There's no user with this email: ${req.body.email}` });
     if (!user.emailVerification) throw new Error();
 
+    //check if Google OAuth user
+    if (!user.password)
+      return res
+        .status(400)
+        .json({
+          message: "You signed-in using Google, please sign-in with Google.",
+        });
+
     //check if it's not verified
     if (!user.emailVerification.isVerified)
       return res.status(403).json({
