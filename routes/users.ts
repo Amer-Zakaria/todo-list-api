@@ -1,11 +1,7 @@
 import express, { Request, Response } from "express";
 import prisma from "./../prisma/client";
 import validateReq from "../middleware/validateReq";
-import validateUser, {
-  emailValidation,
-  expiresAt,
-  validateVerifyEmail,
-} from "../schemas/user";
+import validateUser, { expiresAt, validateVerifyEmail } from "../schemas/user";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/generateAuthToken";
 import generateRandomCode from "../utils/GenerateRandomCode";
@@ -56,12 +52,9 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
       .json({ email: `The email you provided "${user.email}" is not unique` });
 
   //Generate the token
-  const token = generateAuthToken(<IUserWithVerification>createdUser);
+  generateAuthToken(<IUserWithVerification>createdUser, res);
 
-  res
-    .header("x-auth-token", token)
-    .status(201)
-    .json(viewUser(<IUserWithVerification>createdUser));
+  res.status(201).json(viewUser(<IUserWithVerification>createdUser));
 
   try {
     await transporter.sendMail({
@@ -121,11 +114,15 @@ router.post(
     });
 
     //resonse with new JWT
-    const jwt = generateAuthToken({
-      ...user,
-      emailVerification: { ...user.emailVerification, isVerified: true },
-    });
-    res.header("x-auth-token", jwt).json();
+    generateAuthToken(
+      {
+        ...user,
+        emailVerification: { ...user.emailVerification, isVerified: true },
+      },
+      res
+    );
+
+    res.json();
   }
 );
 
@@ -167,8 +164,7 @@ router.get("/oauth/google", async (req, res) => {
 
   try {
     // get the id and access token with the code
-    const { id_token, access_token } = await getGoogleOAuthTokens({ code });
-    console.log({ id_token, access_token });
+    const { id_token } = await getGoogleOAuthTokens({ code });
 
     // get user with tokens
     // I'm getting the token from google, so I gurntee that It have been signed by Google, I can decode immediatly
@@ -203,11 +199,11 @@ router.get("/oauth/google", async (req, res) => {
       include: { emailVerification: true },
     });
 
-    //create an token
-    const token = generateAuthToken(<IUserWithVerification>result);
+    //Generate token
+    generateAuthToken(<IUserWithVerification>result, res);
 
     // redirect back to client
-    res.redirect(`${Config.get("origin")}?token=${token}`);
+    res.redirect(Config.get("origin"));
   } catch (error) {
     logger.error(error);
     //TODO: make an error page for this

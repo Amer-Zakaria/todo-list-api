@@ -43,7 +43,7 @@ router.post(
     }
 
     //send the token
-    const token = generateAuthToken(<IUserWithVerification>user);
+    const token = generateAuthToken(<IUserWithVerification>user, res);
     res.send(token);
   }
 
