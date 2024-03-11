@@ -12,6 +12,7 @@ import authz from "./../middleware/authz";
 import Config from "config";
 import jwt from "jsonwebtoken";
 import getGoogleOAuthTokens from "../utils/getGoogleOAuthTokens";
+import constructErrorResponse from "../utils/constructErrorResponse";
 
 const router = express.Router();
 
@@ -47,9 +48,13 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
       else throw err;
     });
   if (!isEmailUnique)
-    return res
-      .status(400)
-      .json({ email: `The email you provided "${user.email}" is not unique` });
+    return res.status(400).json(
+      constructErrorResponse(new Error(), {
+        validation: {
+          email: `The email you provided "${user.email}" is not unique`,
+        },
+      })
+    );
 
   //Generate the token
   generateAuthToken(<IUserWithVerification>createdUser, res);
@@ -103,9 +108,11 @@ router.post(
         code: "The verification code is expired. Please, generate a new one.",
       });
     if (!doesMatch)
-      return res
-        .status(400)
-        .json({ code: "The verification code is incorrect." });
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          validation: { code: "The verification code is incorrect." },
+        })
+      );
 
     //change is valide
     await prisma.emailVerification.update({

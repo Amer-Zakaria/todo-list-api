@@ -10,6 +10,7 @@ import generateRandomCode from "./../utils/GenerateRandomCode";
 import { transporter } from "..";
 import bcrypt from "bcrypt";
 import Config from "config";
+import constructErrorResponse from "../utils/constructErrorResponse";
 
 const router = express.Router();
 
@@ -25,18 +26,20 @@ router.post(
 
     //check if user exists
     if (!user)
-      return res
-        .status(404)
-        .json({ email: `There's no user with this email: ${req.body.email}` });
+      return res.status(404).json(
+        constructErrorResponse(new Error(), {
+          validation: {
+            email: `There's no user with this email: ${req.body.email}`,
+          },
+        })
+      );
     if (!user.emailVerification) throw new Error();
 
     //check if Google OAuth user
     if (!user.password)
-      return res
-        .status(400)
-        .json({
-          message: "You signed-in using Google, please sign-in with Google.",
-        });
+      return res.status(400).json({
+        message: "You've continued using Google, please sign-in with Google.",
+      });
 
     //check if it's not verified
     if (!user.emailVerification.isVerified)
@@ -86,9 +89,11 @@ router.post(
       !resetPasswordRequest ||
       Date.parse(resetPasswordRequest.expiresAt.toString()) - Date.now() <= 0
     ) {
-      return res
-        .status(400)
-        .json({ code: "Invalid or expired reset password code." });
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          validation: { code: "Invalid or expired reset password code." },
+        })
+      );
     }
 
     //Hashing the password

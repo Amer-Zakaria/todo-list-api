@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { isErrorWithStack } from "..";
 import { logger } from "../";
+import constructErrorResponse from "../utils/constructErrorResponse";
 
 export default function (
   err: Error,
@@ -10,10 +11,9 @@ export default function (
 ) {
   logger.error(err);
 
-  res.status(500).send({
-    message: "Something faild.",
-    ...(isErrorWithStack && {
-      err: { message: err.message, stack: err.stack },
-    }),
-  });
+  res
+    .status(500)
+    .send(
+      constructErrorResponse(err, { message: "Unexpected Error Occured." })
+    );
 }
