@@ -16,7 +16,7 @@ export default function generateAuthToken(
   );
 
   const accessTokenCookieOptions: CookieOptions = {
-    maxAge: <number>Config.get("accessTokenTtl") * 1000,
+    maxAge: ((Config.get("accessTokenTtl") as number) - 60) * 1000, //(access token time to live - 1min) to milliseconds
     httpOnly: false,
     domain: "localhost",
     path: "/",

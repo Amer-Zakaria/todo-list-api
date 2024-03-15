@@ -16,6 +16,6 @@ export default function authz(
     next();
   } catch (ex) {
     //Manipulated token or expiered
-    res.status(400).send("Invalid token.");
+    res.status(400).send({ message: "Invalid token." });
   }
 }

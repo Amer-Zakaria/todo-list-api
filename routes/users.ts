@@ -211,10 +211,9 @@ router.get("/oauth/google", async (req, res) => {
 
     // redirect back to client
     res.redirect(Config.get("origin"));
-  } catch (error) {
-    logger.error(error);
-    //TODO: make an error page for this
-    res.status(500).send("Something went wrong.");
+  } catch (error: any) {
+    if (!error.isExpectedError) logger.error(error);
+    res.redirect(`${Config.get("origin")}/google-error`);
   }
 });
 
