@@ -8,7 +8,7 @@ module.exports = function buildLogger() {
   if (process.env.NODE_ENV === "development") {
     logger = devLogger();
   } else {
-    logger = proLogger();
+    logger = devLogger();
   }
 
   return logger;
