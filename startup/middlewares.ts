@@ -9,7 +9,7 @@ module.exports = function (app: Express) {
 
   app.use(
     cors({
-      origin: (<string>Config.get("origin")).replace("/todo-list", "") || "",
+      origin: Config.get("origin"),
       credentials: true,
       preflightContinue: true,
       methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
