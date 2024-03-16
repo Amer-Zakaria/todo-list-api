@@ -6,10 +6,10 @@
 
 */
 -- AlterTable
-ALTER TABLE `user` ADD COLUMN `emailVerificationId` INTEGER NOT NULL;
+ALTER TABLE `User` ADD COLUMN `emailVerificationId` INTEGER NOT NULL;
 
 -- CreateTable
-CREATE TABLE `emailVerification` (
+CREATE TABLE `EmailVerification` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `isVerified` BOOLEAN NOT NULL DEFAULT false,
     `code` VARCHAR(191) NOT NULL,
@@ -24,4 +24,4 @@ CREATE TABLE `emailVerification` (
 -- CREATE UNIQUE INDEX `Todo_userId_key` ON `Todo`(`userId`);
 
 -- AddForeignKey
-ALTER TABLE `User` ADD CONSTRAINT `User_emailVerificationId_fkey` FOREIGN KEY (`emailVerificationId`) REFERENCES `emailVerification`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `User` ADD CONSTRAINT `User_emailVerificationId_fkey` FOREIGN KEY (`emailVerificationId`) REFERENCES `EmailVerification`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

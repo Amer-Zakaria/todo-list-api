@@ -5,10 +5,10 @@
 
 */
 -- DropForeignKey
-ALTER TABLE `user` DROP FOREIGN KEY `User_emailVerificationId_fkey`;
+ALTER TABLE `User` DROP FOREIGN KEY `User_emailVerificationId_fkey`;
 
 -- AlterTable
-ALTER TABLE `user` DROP COLUMN `emailVerificationId`;
+ALTER TABLE `User` DROP COLUMN `emailVerificationId`;
 
 -- AddForeignKey
-ALTER TABLE `emailVerification` ADD CONSTRAINT `emailVerification_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `EmailVerification` ADD CONSTRAINT `emailVerification_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

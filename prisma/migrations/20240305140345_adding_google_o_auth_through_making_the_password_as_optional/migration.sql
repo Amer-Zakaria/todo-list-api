@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE `user` MODIFY `password` VARCHAR(191) NULL;
+ALTER TABLE `User` MODIFY `password` VARCHAR(191) NULL;

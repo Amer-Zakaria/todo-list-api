@@ -1,2 +1,2 @@
 -- DropIndex
-DROP INDEX `User_email_key` ON `user`;
+DROP INDEX `User_email_key` ON `User`;
