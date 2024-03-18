@@ -43,8 +43,8 @@ router.post(
     }
 
     //send the token
-    const token = generateAuthToken(<IUserWithVerification>user, res);
-    res.send(token);
+    const accessToken = generateAuthToken(<IUserWithVerification>user);
+    res.header("x-auth-token", accessToken).send(accessToken);
   }
 
   //validating the password

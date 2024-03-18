@@ -10,7 +10,8 @@ module.exports = function (app: Express) {
   app.use(
     cors({
       origin: Config.get("origin"),
-      credentials: true,
+      allowedHeaders: ["x-auth-token", "Content-Type"],
+      exposedHeaders: ["x-auth-token"],
       preflightContinue: true,
       methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
     })

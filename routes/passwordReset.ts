@@ -11,6 +11,8 @@ import { transporter } from "..";
 import bcrypt from "bcrypt";
 import Config from "config";
 import constructErrorResponse from "../utils/constructErrorResponse";
+import generateAuthToken from "./../utils/generateAuthToken";
+import IUserWithVerification from "../interfaces/IUserWithVerification";
 
 const router = express.Router();
 
@@ -101,15 +103,17 @@ router.post(
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     //updating the password
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: { email: resetPasswordRequest.email },
       data: { password: hashedPassword },
+      include: { emailVerification: true },
     });
 
     //removing the request
     await prisma.resetPasswordRequest.delete({ where: { code } });
 
-    res.json();
+    const accessToken = generateAuthToken(<IUserWithVerification>user);
+    res.header("x-auth-token", accessToken).send(accessToken);
   }
 );
 

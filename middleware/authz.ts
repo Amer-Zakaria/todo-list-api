@@ -7,11 +7,12 @@ export default function authz(
   res: Response,
   next: NextFunction
 ): any {
-  const token = req.cookies.TLAccessToken;
-  if (!token) return res.status(401).send("Access denied. No token provided.");
+  const accessToken = req.header("x-auth-token");
+  if (!accessToken)
+    return res.status(401).send("Access denied. No token provided.");
 
   try {
-    const decoded = jwt.verify(token, Config.get("jwtPrivateKey"));
+    const decoded = jwt.verify(accessToken, Config.get("jwtPrivateKey"));
     res.locals.user = decoded;
     next();
   } catch (ex) {

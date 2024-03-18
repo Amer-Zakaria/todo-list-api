@@ -57,9 +57,12 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
     );
 
   //Generate the token
-  generateAuthToken(<IUserWithVerification>createdUser, res);
+  const accessToken = generateAuthToken(<IUserWithVerification>createdUser);
 
-  res.status(201).json(viewUser(<IUserWithVerification>createdUser));
+  res
+    .status(201)
+    .header("x-auth-token", accessToken)
+    .json(viewUser(<IUserWithVerification>createdUser));
 
   try {
     await transporter.sendMail({
@@ -121,15 +124,12 @@ router.post(
     });
 
     //resonse with new JWT
-    generateAuthToken(
-      {
-        ...user,
-        emailVerification: { ...user.emailVerification, isVerified: true },
-      },
-      res
-    );
+    const accessToken = generateAuthToken({
+      ...user,
+      emailVerification: { ...user.emailVerification, isVerified: true },
+    });
 
-    res.json();
+    res.header("x-auth-token", accessToken).json();
   }
 );
 
@@ -207,10 +207,10 @@ router.get("/oauth/google", async (req, res) => {
     });
 
     //Generate token
-    generateAuthToken(<IUserWithVerification>result, res);
+    const accessToken = generateAuthToken(<IUserWithVerification>result);
 
     // redirect back to client
-    res.redirect(Config.get("origin"));
+    res.redirect(`${Config.get("origin")}?token=${accessToken}`);
   } catch (error: any) {
     if (!error.isExpectedError) logger.error(error);
     res.redirect(`${Config.get("origin")}/google-error`);
