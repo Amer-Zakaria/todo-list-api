@@ -212,7 +212,7 @@ router.get("/oauth/google", async (req, res) => {
     // redirect back to client
     res.redirect(`${Config.get("origin")}?token=${accessToken}`);
   } catch (error: any) {
-    if (!error.isExpectedError) logger.error(error);
+    logger.error(error);
     res.redirect(`${Config.get("origin")}/google-error`);
   }
 });

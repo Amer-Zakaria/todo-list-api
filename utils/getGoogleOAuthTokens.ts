@@ -18,20 +18,14 @@ export default async function getGoogleOAuthTokens({
     grant_type: "authorization_code",
   };
 
-  try {
-    const res = await axios.post<IGoogleTokensResult>(
-      url,
-      QueryString.stringify(values),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    return res.data;
-  } catch (e: any) {
-    const isExpectedError = e.response.status >= 400 && e.response.status < 500;
-    e.isExpectedError = isExpectedError;
-    throw e;
-  }
+  const res = await axios.post<IGoogleTokensResult>(
+    url,
+    QueryString.stringify(values),
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+  return res.data;
 }
