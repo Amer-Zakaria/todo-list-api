@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import constructErrorResponse from "../utils/constructErrorResponse";
 
 // this middle is for ensuring that the user who's trying
 // to update a todo then his the owner of it
@@ -14,7 +15,11 @@ export default function owner(
   const targetedTodoUserId = res.locals.record.userId;
 
   if (userId !== targetedTodoUserId)
-    return res.status(403).send("This isn't your todo");
+    return res
+      .status(403)
+      .send(
+        constructErrorResponse(new Error(), { message: "This isn't your todo" })
+      );
 
   next();
 }

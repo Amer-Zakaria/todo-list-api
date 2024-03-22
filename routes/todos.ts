@@ -8,6 +8,7 @@ import { TodoStatus } from "@prisma/client";
 import extractErrorMessagesJOI from "../utils/extractErrorMessagesJOI";
 import authz from "./../middleware/authz";
 import owner from "./../middleware/owner";
+import constructErrorResponse from "../utils/constructErrorResponse";
 
 const router = express.Router();
 
@@ -58,7 +59,12 @@ router.patch(
     if (validationResult.error) {
       return res
         .status(400)
-        .json(extractErrorMessagesJOI(validationResult.error));
+        .json(
+          constructErrorResponse(
+            new Error(),
+            extractErrorMessagesJOI(validationResult.error)
+          )
+        );
     }
 
     const todo = await prisma.todo.update({

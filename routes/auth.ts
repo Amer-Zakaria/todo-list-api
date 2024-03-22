@@ -5,6 +5,7 @@ import prisma from "../prisma/client";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/generateAuthToken";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
+import constructErrorResponse from "../utils/constructErrorResponse";
 
 const router = express.Router();
 
@@ -22,23 +23,29 @@ router.post(
 
     //validating the email
     if (!user) {
-      res.status(400).json({
-        message: "Incorrect Email or Password.",
-      });
+      res.status(400).json(
+        constructErrorResponse(new Error(), {
+          message: "Incorrect Email or Password.",
+        })
+      );
       return;
     }
     if (!user.password)
-      return res.status(400).json({
-        message: "This is a Google account, please continue with Google.",
-      });
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          message: "This is a Google account, please continue with Google.",
+        })
+      );
     const isValidePassword = await bcrypt.compare(
       userCredentials.password,
       user.password
     );
     if (!isValidePassword) {
-      res.status(400).json({
-        message: "Incorrect Email or Password.",
-      });
+      res.status(400).json(
+        constructErrorResponse(new Error(), {
+          message: "Incorrect Email or Password.",
+        })
+      );
       return;
     }
 
