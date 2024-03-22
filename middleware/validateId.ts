@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { isErrorWithStack } from "..";
-import prisma from "../prisma/client";
 import constructErrorResponse from "../utils/constructErrorResponse";
 
 export default function validateId(model: any) {
@@ -13,13 +11,11 @@ export default function validateId(model: any) {
 
     // check the id validity
     if (isNaN(id) || id <= 0 || id > 99999999999999)
-      return res
-        .status(400)
-        .json(
-          constructErrorResponse(new Error(), {
-            validation: { id: `Invalid Id: ${id}` },
-          })
-        );
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          validation: { id: `Invalid Id: ${id}` },
+        })
+      );
 
     //check if the record exists
     const record = await model.findUnique({

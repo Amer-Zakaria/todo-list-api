@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { isErrorWithStack } from "..";
 import extractErrorMessagesJOI from "../utils/extractErrorMessagesJOI";
 import constructErrorResponse from "../utils/constructErrorResponse";
 
@@ -14,13 +13,11 @@ export default function validateReq(
   ): Promise<any> => {
     const result = validationFunction(req[part]);
     if (result.error) {
-      return res
-        .status(400)
-        .json(
-          constructErrorResponse(result.error, {
-            validation: extractErrorMessagesJOI(result.error),
-          })
-        );
+      return res.status(400).json(
+        constructErrorResponse(result.error, {
+          validation: extractErrorMessagesJOI(result.error),
+        })
+      );
     }
 
     next();

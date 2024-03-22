@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { isErrorWithStack } from "..";
 import { logger } from "../";
 import constructErrorResponse from "../utils/constructErrorResponse";
 
