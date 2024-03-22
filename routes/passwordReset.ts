@@ -39,15 +39,19 @@ router.post(
 
     //check if Google OAuth user
     if (!user.password)
-      return res.status(400).json({
-        message: "You've continued using Google, please sign-in with Google.",
-      });
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          message: "You've continued using Google, please sign-in with Google.",
+        })
+      );
 
     //check if it's not verified
     if (!user.emailVerification.isVerified)
-      return res.status(403).json({
-        message: "The user is not verified",
-      });
+      return res.status(403).json(
+        constructErrorResponse(new Error(), {
+          message: "The user is not verified",
+        })
+      );
 
     //create the rerset password request
     const code = generateRandomCode();

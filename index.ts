@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 import express from "express";
 import Config from "config";
 
@@ -10,7 +11,6 @@ require("./startup/validation")();
 require("./startup/middlewares")(app);
 require("./startup/routes")(app);
 export const transporter = require("./startup/mailer")();
-export const isErrorWithStack: boolean = Config.get("stack");
 logger.info(`App Name: ${Config.get("name")}`);
 
 //Publishing

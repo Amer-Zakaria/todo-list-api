@@ -97,7 +97,13 @@ router.post(
 
     //This also prevent users who signed-in using Google OAuth from accessing this route
     if (user.emailVerification.isVerified)
-      return res.status(400).json({ message: "Email is already verified." });
+      return res
+        .status(400)
+        .json(
+          constructErrorResponse(new Error(), {
+            message: "Email is already verified.",
+          })
+        );
 
     //conditions
     const doesMatch = req.body.code === user.emailVerification.code;
@@ -107,9 +113,11 @@ router.post(
 
     //handle invalid cases
     if (doesExceedExpirationDate)
-      return res.status(400).json({
-        code: "The verification code is expired. Please, generate a new one.",
-      });
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          code: "The verification code is expired. Please, generate a new one.",
+        })
+      );
     if (!doesMatch)
       return res.status(400).json(
         constructErrorResponse(new Error(), {
@@ -140,7 +148,11 @@ router.post("/regenerate-code", authz, async (req, res) => {
 
   //This also prevent users who signed-in using Google OAuth from accessing this route
   if (emailVerification?.isVerified)
-    return res.status(400).json({ message: "Email is already verified." });
+    return res.status(400).json(
+      constructErrorResponse(new Error(), {
+        message: "Email is already verified.",
+      })
+    );
 
   const code = generateRandomCode();
   await prisma.emailVerification.update({
@@ -182,7 +194,11 @@ router.get("/oauth/google", async (req, res) => {
     } = jwt.decode(id_token) as jwt.JwtPayload;
 
     if (isVerifedGoogleEmail) {
-      return res.status(403).send("Google account is not verified");
+      return res.status(403).send(
+        constructErrorResponse(new Error(), {
+          message: "Google account is not verified",
+        })
+      );
     }
 
     // upsert the user
