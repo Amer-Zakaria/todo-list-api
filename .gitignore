@@ -1,4 +1,7 @@
 node_modules
+/coverage
 scratch
 *.log
 .env
+.env.test
+.env.development
