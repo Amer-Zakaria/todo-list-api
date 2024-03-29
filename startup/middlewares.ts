@@ -3,7 +3,7 @@ import express, { Express } from "express";
 import cors from "cors";
 import Config from "config";
 
-module.exports = function (app: Express) {
+export default (app: Express) => {
   app.use(express.json());
 
   app.use(

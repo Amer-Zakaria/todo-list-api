@@ -36,6 +36,7 @@ router.post(
           message: "This is a Google account, please continue with Google.",
         })
       );
+    //validating the password
     const isValidePassword = await bcrypt.compare(
       userCredentials.password,
       user.password
@@ -51,10 +52,8 @@ router.post(
 
     //send the token
     const accessToken = generateAuthToken(<IUserWithVerification>user);
-    res.header("x-auth-token", accessToken).send(accessToken);
+    res.header("x-auth-token", accessToken).json(accessToken);
   }
-
-  //validating the password
 );
 
 export default router;

@@ -3,6 +3,7 @@ import Config from "config";
 import generateAuthToken from "./../../../utils/generateAuthToken";
 import IUserWithVerification from "./../../../interfaces/IUserWithVerification";
 import viewUser from "../../../utils/viewUser";
+import { jest } from "@jest/globals";
 
 const user: IUserWithVerification = {
   id: 1,
@@ -28,40 +29,19 @@ jest.mock("../../../utils/viewUser", () => ({
     },
   }),
 }));
-jest.mock("config", () => ({
-  __esModule: true,
-  default: {
-    get: jest.fn(),
-  },
-}));
-jest.mock("jsonwebtoken", () => ({
-  __esModule: true,
-  default: {
-    sign: jest.fn().mockReturnValue("a"),
-  },
-}));
+(jwt.sign as jest.Mock) = jest.fn().mockReturnValue("a");
 
 describe("generateAuthToken", () => {
-  beforeEach(() => {
-    const configGetMock = jest.spyOn(Config, "get");
-    configGetMock.mockReturnValueOnce("secretKey");
-    configGetMock.mockReturnValueOnce(3600); // 1 hour
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("JWT sign should be called", () => {
-    const configGetMock = jest.spyOn(Config, "get");
-    configGetMock.mockReturnValueOnce("secretKey");
-    configGetMock.mockReturnValueOnce(3600); // 1 hour
-
     generateAuthToken(user);
 
-    expect(jwt.sign).toHaveBeenCalledWith(viewUser(user), "secretKey", {
-      expiresIn: 3600,
-    });
+    expect(jwt.sign).toHaveBeenCalledWith(
+      viewUser(user),
+      Config.get("jwtPrivateKey"),
+      {
+        expiresIn: Config.get("accessTokenTtl"),
+      }
+    );
   });
 
   it("Should return the access token", () => {

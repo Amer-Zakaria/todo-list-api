@@ -18,5 +18,3 @@ export default function buildDevLogger() {
     exceptionHandlers: [new transports.Console()],
   });
 }
-
-module.exports = buildDevLogger;

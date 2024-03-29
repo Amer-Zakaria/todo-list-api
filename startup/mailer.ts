@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import Config from "config";
 
-module.exports = () =>
+export default () =>
   nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
