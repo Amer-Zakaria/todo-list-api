@@ -3,5 +3,4 @@ node_modules
 scratch
 *.log
 .env
-.env.test
-.env.development
+.env.*
