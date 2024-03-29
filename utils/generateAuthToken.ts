@@ -1,4 +1,3 @@
-import { CookieOptions } from "express";
 import jwt from "jsonwebtoken";
 import Config from "config";
 import IUserWithVerification from "../interfaces/IUserWithVerification";

@@ -34,7 +34,7 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
           create: {
             //it runs as a transaction alongside the creation of the user
             code,
-            expiresAt: expiresAt(), //after two hours from now
+            expiresAt: expiresAt(),
           },
         },
         ...req.body,
@@ -97,13 +97,11 @@ router.post(
 
     //This also prevent users who signed-in using Google OAuth from accessing this route
     if (user.emailVerification.isVerified)
-      return res
-        .status(400)
-        .json(
-          constructErrorResponse(new Error(), {
-            message: "Email is already verified.",
-          })
-        );
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          message: "Email is already verified.",
+        })
+      );
 
     //conditions
     const doesMatch = req.body.code === user.emailVerification.code;

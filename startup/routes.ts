@@ -6,7 +6,7 @@ import auth from "../routes/auth";
 import resetPassword from "../routes/passwordReset";
 import Config from "config";
 
-module.exports = function (app: Express) {
+export default (app: Express) => {
   app.get("/", (req, res) =>
     res.json(`hello from the home page of "${Config.get("name")}"`)
   );

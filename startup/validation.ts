@@ -1,23 +1,23 @@
 import Config from "config";
 import { logger } from "..";
 
-module.exports = () => {
+export default () => {
   //Evnrionment variables validations
-  if (!Config.get("jwtPrivateKey")) {
+  if (!Config.has("jwtPrivateKey")) {
     logger.error("FATAL ERROR: jwtPrivateKey is not defined.");
     process.exit(1);
   }
-  if (!Config.get("google.clientId") || !Config.get("google.clientSecret")) {
+  if (!Config.has("google.clientId") || !Config.has("google.clientSecret")) {
     logger.error(
       "FATAL ERROR: Google clientId or clientSecret is not defined."
     );
     process.exit(1);
   }
-  if (!Config.get("mailer.emailPass")) {
+  if (!Config.has("mailer.emailPass")) {
     logger.error("FATAL ERROR: Email password for mailer is not defined.");
     process.exit(1);
   }
-  if (!Config.get("db.uri")) {
+  if (!Config.has("db.uri")) {
     logger.error("FATAL ERROR: Database URI is not defined.");
     process.exit(1);
   }

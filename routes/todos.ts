@@ -80,7 +80,7 @@ router.patch(
 
 router.delete(
   "/:id",
-  [authz, validateId(prisma.todo), owner, validateReq(validateTodo, "body")],
+  [authz, validateId(prisma.todo), owner],
   async (req: Request, res: Response) => {
     const todo = await prisma.todo.delete({
       where: { id: +req.params.id },
