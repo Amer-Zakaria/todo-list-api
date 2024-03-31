@@ -14,8 +14,10 @@
   "author": "Amer",
   "license": "ISC",
   "dependencies": {
+    "@types/compression": "^1.7.5",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
+    "compression": "^1.7.4",
     "config": "^3.3.9",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
