@@ -1,8 +1,8 @@
 import request from "supertest";
-import app from "../../..";
-import generateAuthToken from "../../../utils/generateAuthToken";
-import prisma from "../../../prisma/client";
-import IUserWithVerification from "../../../interfaces/IUserWithVerification";
+import app from "../../../src";
+import generateAuthToken from "../../../src/utils/generateAuthToken";
+import prisma from "../../../src/client";
+import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 
 describe("Auth middleware", () => {
   let user: any;

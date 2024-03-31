@@ -1,7 +1,7 @@
 import express from "express";
 import validateReq from "../middleware/validateReq";
 import { validateUserCredentials } from "../schemas/user";
-import prisma from "../prisma/client";
+import prisma from "../client";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/generateAuthToken";
 import IUserWithVerification from "../interfaces/IUserWithVerification";

@@ -1,5 +1,5 @@
-import devLogger from "../config/dev-logger";
-import proLogger from "../config/prod-logger";
+import devLogger from "./dev-logger";
+import proLogger from "./prod-logger";
 import { Logger } from "winston";
 
 export default () => {

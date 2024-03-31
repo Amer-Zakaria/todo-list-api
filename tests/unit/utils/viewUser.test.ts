@@ -1,5 +1,5 @@
-import IUserWithVerification from "../../../interfaces/IUserWithVerification";
-import viewUser from "../../../utils/viewUser";
+import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
+import viewUser from "../../../src/utils/viewUser";
 
 describe("generateAuthToken", () => {
   it("Should return just allowed user properties to view", () => {

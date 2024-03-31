@@ -1,5 +1,5 @@
 import Config from "config";
-import { logger } from "..";
+import { logger } from "../index";
 
 export default () => {
   //Evnrionment variables validations

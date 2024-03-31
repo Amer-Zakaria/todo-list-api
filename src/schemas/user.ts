@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { joiPasswordExtendCore } from "joi-password";
-import IUserCred from "./../interfaces/IUserCred";
+import IUserCred from "../interfaces/IUserCred";
 import IUser from "../interfaces/IUser";
 const joiPassword = Joi.extend(joiPasswordExtendCore);
 

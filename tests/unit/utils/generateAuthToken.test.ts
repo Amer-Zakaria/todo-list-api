@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import Config from "config";
-import generateAuthToken from "./../../../utils/generateAuthToken";
-import IUserWithVerification from "./../../../interfaces/IUserWithVerification";
-import viewUser from "../../../utils/viewUser";
+import generateAuthToken from "./../../../src/utils/generateAuthToken";
+import IUserWithVerification from "./../../../src/interfaces/IUserWithVerification";
+import viewUser from "../../../src/utils/viewUser";
 import { jest } from "@jest/globals";
 
 const user: IUserWithVerification = {
@@ -18,7 +18,7 @@ const user: IUserWithVerification = {
     userId: 1,
   },
 };
-jest.mock("../../../utils/viewUser", () => ({
+jest.mock("../../../src/utils/viewUser", () => ({
   __esModule: true,
   default: () => ({
     id: 1,

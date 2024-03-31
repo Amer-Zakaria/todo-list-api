@@ -1,5 +1,5 @@
 import Joi from "joi";
-import extractErrorMessagesJOI from "../../../utils/extractErrorMessagesJOI";
+import extractErrorMessagesJOI from "../../../src/utils/extractErrorMessagesJOI";
 
 const err: Joi.ValidationError = {
   details: [

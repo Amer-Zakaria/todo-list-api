@@ -1,14 +1,14 @@
 import express, { Request, Response } from "express";
-import prisma from "./../prisma/client";
+import prisma from "../client";
 import validateReq from "../middleware/validateReq";
 import validateUser, { expiresAt, validateVerifyEmail } from "../schemas/user";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/generateAuthToken";
 import generateRandomCode from "../utils/GenerateRandomCode";
-import { logger, transporter } from "..";
+import { logger, transporter } from "../index";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
 import viewUser from "../utils/viewUser";
-import authz from "./../middleware/authz";
+import authz from "../middleware/authz";
 import Config from "config";
 import jwt from "jsonwebtoken";
 import getGoogleOAuthTokens from "../utils/getGoogleOAuthTokens";

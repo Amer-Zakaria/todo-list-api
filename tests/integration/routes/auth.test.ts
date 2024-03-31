@@ -1,7 +1,7 @@
 import request from "supertest";
-import app from "../../../index";
-import prisma from "../../../prisma/client";
-import { transporter } from "../../../index";
+import app from "../../../src/index";
+import prisma from "../../../src/client";
+import { transporter } from "../../../src/index";
 import { jest } from "@jest/globals";
 
 describe("/api/auth", () => {

@@ -1,7 +1,7 @@
 import request from "supertest";
-import app from "../../..";
-import generateAuthToken from "../../../utils/generateAuthToken";
-import prisma from "../../../prisma/client";
+import app from "../../../src";
+import generateAuthToken from "../../../src/utils/generateAuthToken";
+import prisma from "../../../src/client";
 import { TodoStatus } from "@prisma/client";
 
 describe("Validate id middleware", () => {

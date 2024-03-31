@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import Config from "config";
-import constructErrorResponse from "../../../utils/constructErrorResponse";
+import constructErrorResponse from "../../../src/utils/constructErrorResponse";
 
 describe("constructErrorResponse", () => {
   (Config.get as jest.Mock) = jest.fn().mockReturnValue(false);

@@ -1,17 +1,17 @@
 import express from "express";
-import prisma from "./../prisma/client";
+import prisma from "../client";
 import validateReq from "../middleware/validateReq";
 import { expiresAt } from "../schemas/user";
 import {
   validateRequestPasswordReset,
   validateResetPassword,
 } from "../schemas/passReset";
-import generateRandomCode from "./../utils/GenerateRandomCode";
-import { transporter } from "..";
+import generateRandomCode from "../utils/GenerateRandomCode";
+import { transporter } from "../index";
 import bcrypt from "bcrypt";
 import Config from "config";
 import constructErrorResponse from "../utils/constructErrorResponse";
-import generateAuthToken from "./../utils/generateAuthToken";
+import generateAuthToken from "../utils/generateAuthToken";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
 
 const router = express.Router();

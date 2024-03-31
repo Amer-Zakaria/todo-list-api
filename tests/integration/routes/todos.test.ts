@@ -1,9 +1,9 @@
 import request from "supertest";
-import app from "../../../index";
-import prisma from "../../../prisma/client";
+import app from "../../../src/index";
+import prisma from "../../../src/client";
 import { Todo, TodoStatus } from "@prisma/client";
-import generateAuthToken from "../../../utils/generateAuthToken";
-import IUserWithVerification from "../../../interfaces/IUserWithVerification";
+import generateAuthToken from "../../../src/utils/generateAuthToken";
+import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 
 describe("/api/todos", () => {
   const headers = { ["x-auth-token"]: "" };

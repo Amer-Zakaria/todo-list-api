@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
 import Joi from "joi";
-import prisma from "./../prisma/client";
+import prisma from "../client";
 import validateReq from "../middleware/validateReq";
 import validateId from "../middleware/validateId";
 import validateTodo from "./../schemas/todo";
 import { TodoStatus } from "@prisma/client";
 import extractErrorMessagesJOI from "../utils/extractErrorMessagesJOI";
-import authz from "./../middleware/authz";
-import owner from "./../middleware/owner";
+import authz from "../middleware/authz";
+import owner from "../middleware/owner";
 import constructErrorResponse from "../utils/constructErrorResponse";
 
 const router = express.Router();

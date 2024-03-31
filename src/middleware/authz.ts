@@ -10,13 +10,11 @@ export default function authz(
 ): any {
   const accessToken = req.header("x-auth-token");
   if (!accessToken)
-    return res
-      .status(401)
-      .send(
-        constructErrorResponse(new Error(), {
-          message: "Access denied. No token provided.",
-        })
-      );
+    return res.status(401).send(
+      constructErrorResponse(new Error(), {
+        message: "Access denied. No token provided.",
+      })
+    );
 
   try {
     const decoded = jwt.verify(accessToken, Config.get("jwtPrivateKey"));

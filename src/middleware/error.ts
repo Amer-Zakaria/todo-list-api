@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { logger } from "../";
+import { logger } from "../index";
 import constructErrorResponse from "../utils/constructErrorResponse";
 
 export default function (
