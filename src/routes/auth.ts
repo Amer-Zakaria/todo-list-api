@@ -3,9 +3,12 @@ import validateReq from "../middleware/validateReq";
 import { validateUserCredentials } from "../schemas/user";
 import prisma from "../client";
 import bcrypt from "bcrypt";
-import generateAuthToken from "../utils/generateAuthToken";
+import generateToken from "../utils/generateToken";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
 import constructErrorResponse from "../utils/constructErrorResponse";
+import Config from "config";
+import jwt from "jsonwebtoken";
+import IViewUser from "../interfaces/IViewUser";
 
 const router = express.Router();
 
@@ -50,10 +53,61 @@ router.post(
       return;
     }
 
-    //send the token
-    const accessToken = generateAuthToken(<IUserWithVerification>user);
-    res.header("x-auth-token", accessToken).json(accessToken);
+    //send token
+    const accessToken = await generateToken(<IUserWithVerification>user);
+    const refreshToken = await generateToken(<IUserWithVerification>user, true);
+    res
+      .set({
+        "x-auth-token": accessToken,
+        "x-refresh-token": refreshToken,
+      })
+      .json(accessToken);
   }
 );
+
+router.post("/token", async (req, res) => {
+  const sentRefreshToken = req.body.refreshToken;
+
+  if (!sentRefreshToken) return res.sendStatus(401);
+  if (typeof sentRefreshToken !== "string") return res.sendStatus(400);
+
+  //check if the refreshToken is not included in the database
+  const refreshTokenObject = await prisma.refreshToken.findUnique({
+    where: { token: sentRefreshToken.trim() },
+  });
+  const refreshToken = refreshTokenObject?.token;
+  if (!refreshToken) return res.sendStatus(403);
+
+  try {
+    const decoded = jwt.verify(
+      refreshToken,
+      Config.get("refreshJwtPrivateKey")
+    ) as IViewUser;
+    const userId = decoded.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { emailVerification: true },
+    });
+
+    const accessToken = await generateToken(<IUserWithVerification>user);
+    res.header("x-auth-token", accessToken).json(accessToken);
+  } catch (err) {
+    return res.sendStatus(403);
+  }
+});
+
+router.delete("/logout", async (req, res) => {
+  const sentRefreshToken = req.body.refreshToken;
+
+  if (!sentRefreshToken) return res.sendStatus(401);
+  if (typeof sentRefreshToken !== "string") return res.sendStatus(400);
+
+  await prisma.refreshToken.delete({
+    where: { token: sentRefreshToken.trim() },
+  });
+
+  res.sendStatus(204);
+});
 
 export default router;

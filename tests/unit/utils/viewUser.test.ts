@@ -1,7 +1,7 @@
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 import viewUser from "../../../src/utils/viewUser";
 
-describe("generateAuthToken", () => {
+describe("viewUser", () => {
   it("Should return just allowed user properties to view", () => {
     const user: IUserWithVerification = {
       id: 1,

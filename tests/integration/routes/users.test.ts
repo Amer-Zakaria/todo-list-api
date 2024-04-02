@@ -11,6 +11,7 @@ describe("/api/users", () => {
   });
   afterEach(async () => {
     await prisma.emailVerification.deleteMany();
+    await prisma.refreshToken.deleteMany();
     await prisma.user.deleteMany();
   });
 
@@ -100,13 +101,16 @@ describe("/api/users", () => {
       );
       expect(isValidePassword).toBe(true);
     });
-    it("Should return the user alongside the access token in the header if the request body is valid", async () => {
+    it("Should return the user alongside the access/refresh token in the header if the request body is valid", async () => {
       const res = await exec();
       expect(res.body).toMatchObject({
         name: "John Doe",
         email: "a@gmail.com",
       });
       expect(res.headers["x-auth-token"]).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/);
+      expect(res.headers["x-refresh-token"]).toMatch(
+        /^[\w-]+\.[\w-]+\.[\w-]+$/
+      );
     });
   });
 });

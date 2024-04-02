@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../../src";
-import generateAuthToken from "../../../src/utils/generateAuthToken";
+import generateToken from "../../../src/utils/generateToken";
 import prisma from "../../../src/client";
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 
@@ -33,8 +33,8 @@ describe("Auth middleware", () => {
     await prisma.user.deleteMany();
   });
 
-  beforeEach(() => {
-    token = generateAuthToken(user);
+  beforeEach(async () => {
+    token = await generateToken(user);
   });
 
   const exec = () =>
@@ -53,7 +53,7 @@ describe("Auth middleware", () => {
       },
       include: { emailVerification: true },
     });
-    token = generateAuthToken(<IUserWithVerification>user);
+    token = await generateToken(<IUserWithVerification>user);
 
     const res = await exec();
 

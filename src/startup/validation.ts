@@ -7,6 +7,10 @@ export default () => {
     logger.error("FATAL ERROR: jwtPrivateKey is not defined.");
     process.exit(1);
   }
+  if (!Config.has("refreshJwtPrivateKey")) {
+    logger.error("FATAL ERROR: refreshJwtPrivateKey is not defined.");
+    process.exit(1);
+  }
   if (!Config.has("google.clientId") || !Config.has("google.clientSecret")) {
     logger.error(
       "FATAL ERROR: Google clientId or clientSecret is not defined."

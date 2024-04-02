@@ -3,7 +3,7 @@ import prisma from "../client";
 import validateReq from "../middleware/validateReq";
 import validateUser, { expiresAt, validateVerifyEmail } from "../schemas/user";
 import bcrypt from "bcrypt";
-import generateAuthToken from "../utils/generateAuthToken";
+import generateToken from "../utils/generateToken";
 import generateRandomCode from "../utils/GenerateRandomCode";
 import { logger, transporter } from "../index";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
@@ -57,11 +57,18 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
     );
 
   //Generate the token
-  const accessToken = generateAuthToken(<IUserWithVerification>createdUser);
+  const accessToken = await generateToken(<IUserWithVerification>createdUser);
+  const refreshToken = await generateToken(
+    <IUserWithVerification>createdUser,
+    true
+  );
 
   res
     .status(201)
-    .header("x-auth-token", accessToken)
+    .set({
+      "x-auth-token": accessToken,
+      "x-refresh-token": refreshToken,
+    })
     .json(viewUser(<IUserWithVerification>createdUser));
 
   try {
@@ -130,7 +137,7 @@ router.post(
     });
 
     //resonse with new JWT
-    const accessToken = generateAuthToken({
+    const accessToken = await generateToken({
       ...user,
       emailVerification: { ...user.emailVerification, isVerified: true },
     });
@@ -221,10 +228,18 @@ router.get("/oauth/google", async (req, res) => {
     });
 
     //Generate token
-    const accessToken = generateAuthToken(<IUserWithVerification>result);
+    const accessToken = await generateToken(<IUserWithVerification>result);
+    const refreshToken = await generateToken(
+      <IUserWithVerification>result,
+      true
+    );
 
     // redirect back to client
-    res.redirect(`${Config.get("origin")}?token=${accessToken}`);
+    res.redirect(
+      `${Config.get(
+        "origin"
+      )}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
   } catch (error: any) {
     logger.error(error);
     res.redirect(`${Config.get("origin")}/google-error`);

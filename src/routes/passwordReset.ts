@@ -11,7 +11,7 @@ import { transporter } from "../index";
 import bcrypt from "bcrypt";
 import Config from "config";
 import constructErrorResponse from "../utils/constructErrorResponse";
-import generateAuthToken from "../utils/generateAuthToken";
+import generateToken from "../utils/generateToken";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
 
 const router = express.Router();
@@ -116,7 +116,7 @@ router.post(
     //removing the request
     await prisma.resetPasswordRequest.delete({ where: { code } });
 
-    const accessToken = generateAuthToken(<IUserWithVerification>user);
+    const accessToken = await generateToken(<IUserWithVerification>user);
     res.header("x-auth-token", accessToken).send(accessToken);
   }
 );

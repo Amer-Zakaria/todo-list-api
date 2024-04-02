@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../../src/index";
 import prisma from "../../../src/client";
 import { Todo, TodoStatus } from "@prisma/client";
-import generateAuthToken from "../../../src/utils/generateAuthToken";
+import generateToken from "../../../src/utils/generateToken";
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 
 describe("/api/todos", () => {
@@ -20,7 +20,7 @@ describe("/api/todos", () => {
       include: { emailVerification: true },
     });
 
-    headers["x-auth-token"] = generateAuthToken(<IUserWithVerification>user);
+    headers["x-auth-token"] = await generateToken(<IUserWithVerification>user);
     userId = user.id;
   });
 

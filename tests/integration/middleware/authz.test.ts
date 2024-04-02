@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src";
-import generateAuthToken from "../../../src/utils/generateAuthToken";
+import generateToken from "../../../src/utils/generateToken";
 import prisma from "../../../src/client";
 import Config from "config";
 
@@ -26,8 +26,8 @@ describe("Auth middleware", () => {
     await prisma.user.deleteMany();
   });
 
-  beforeEach(() => {
-    token = generateAuthToken(user);
+  beforeEach(async () => {
+    token = await generateToken(user);
   });
 
   const exec = () => request(app).get("/api/todos").set("x-auth-token", token);
@@ -52,7 +52,7 @@ describe("Auth middleware", () => {
     const mockConfigGet = jest.spyOn(Config, "get");
     mockConfigGet.mockReturnValueOnce("SecretKey"); // jwtPrivateKey
     mockConfigGet.mockReturnValueOnce(0); // accessTokenTtl
-    token = generateAuthToken(user);
+    token = await generateToken(user);
 
     const res = await exec();
 

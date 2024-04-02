@@ -7,15 +7,15 @@ const keepTheServerAlive = () => {
   https
     .get(backenUrl, (res) => {
       if (res.statusCode === 200) {
-        console.log("Server restarted");
+        // console.log("Server restarted");
       } else {
-        console.error(
-          `Failed to restart server with status code: ${res.statusCode}`
-        );
+        // console.error(
+        //   `Failed to restart server with status code: ${res.statusCode}`
+        // );
       }
     })
     .on("error", (err) => {
-      console.error("Error during Restart: ", err.message);
+      // console.error("Error during Restart: ", err.message);
     });
 };
 

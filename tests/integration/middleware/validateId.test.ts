@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../../src";
-import generateAuthToken from "../../../src/utils/generateAuthToken";
+import generateToken from "../../../src/utils/generateToken";
 import prisma from "../../../src/client";
 import { TodoStatus } from "@prisma/client";
 
@@ -20,7 +20,7 @@ describe("Validate id middleware", () => {
       },
       include: { emailVerification: true },
     });
-    token = generateAuthToken(user);
+    token = await generateToken(user);
 
     const todo = await prisma.todo.create({
       data: { details: "x", userId: user.id },

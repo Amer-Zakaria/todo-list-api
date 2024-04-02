@@ -2,6 +2,7 @@ module.exports = {
   name: "Todo List API",
   port: 3001,
   jwtPrivateKey: "",
+  refreshJwtPrivateKey: "",
   hitTheServerEvery: "*/14 * * * *",
   accessTokenTtl: 15 * 60, //15min
   origin: "http://localhost:3000",

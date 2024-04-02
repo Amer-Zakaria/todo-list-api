@@ -1,6 +1,7 @@
 {
     "port": "TodoList_Port",
     "jwtPrivateKey": "TodoList_JWT_PRIVATE_KEY",
+    "refreshJwtPrivateKey": "TodoList_REFRESH_JWT_PRIVATE_KEY",
     "hitTheServerEvery": "TodoList_HIT_THE_SERVER_EVERY",
     "db": {
         "uri": "TodoList_DATABASE_URL"

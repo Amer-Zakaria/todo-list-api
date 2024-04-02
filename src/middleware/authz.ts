@@ -22,7 +22,7 @@ export default function authz(
     next();
   } catch (ex) {
     //Manipulated token or expiered
-    res
+    return res
       .status(400)
       .send(constructErrorResponse(new Error(), { message: "Invalid token." }));
   }

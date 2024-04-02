@@ -16,6 +16,7 @@ model User {
   name                  String
   password              String?
   todos                 Todo[]
+  refreshTokens         RefreshToken[]
   emailVerification     EmailVerification?
   ResetPasswordRequests ResetPasswordRequest[]
 }
@@ -42,6 +43,13 @@ model EmailVerification {
   expiresAt  DateTime
   userId     Int      @unique
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model RefreshToken {
+  id     Int    @id @default(autoincrement())
+  token  String @unique @db.VarChar(512)
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model ResetPasswordRequest {
