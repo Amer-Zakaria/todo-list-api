@@ -16,7 +16,7 @@ describe("Validate id middleware", () => {
         name: "Amer z",
         email: "validateId@gmail.com",
         password: "AAaa11!",
-        emailVerification: { create: { code: "a", expiresAt: new Date() } },
+        emailVerification: { create: {} },
       },
       include: { emailVerification: true },
     });

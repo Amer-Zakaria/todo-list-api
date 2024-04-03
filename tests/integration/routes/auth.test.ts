@@ -26,7 +26,7 @@ describe("/api/auth", () => {
         ...user,
         password: hashedPassword,
         emailVerification: {
-          create: { isVerified: true, code: "32DS#2", expiresAt: new Date() },
+          create: { isVerified: true },
         },
       },
     })) as IUserWithVerification;

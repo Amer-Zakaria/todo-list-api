@@ -15,7 +15,7 @@ describe("Auth middleware", () => {
         name: "Amer1",
         email: "owner1@gmail.com",
         password: "AAaa11!",
-        emailVerification: { create: { code: "a", expiresAt: new Date() } },
+        emailVerification: { create: {} },
       },
       include: { emailVerification: true },
     });
@@ -49,7 +49,7 @@ describe("Auth middleware", () => {
         name: "Amer2",
         email: "owner2@gmail.com",
         password: "AAaa11!",
-        emailVerification: { create: { code: "a", expiresAt: new Date() } },
+        emailVerification: { create: {} },
       },
       include: { emailVerification: true },
     });

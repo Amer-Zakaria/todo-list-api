@@ -3,9 +3,12 @@ module.exports = {
   port: 3001,
   jwtPrivateKey: "",
   refreshJwtPrivateKey: "",
+  emailVerificationJwtPrivateKey: "123456",
   hitTheServerEvery: "*/14 * * * *",
   accessTokenTtl: 15 * 60, //15min
+  emailVerificationTokenTtl: "30m",
   origin: "http://localhost:3000",
+  apiOrigin: "http://localhost:3001",
   mailer: {
     email: "amerzkfe1234@gmail.com",
     emailPass: "",

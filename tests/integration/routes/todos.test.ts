@@ -15,7 +15,7 @@ describe("/api/todos", () => {
         name: "Amer z",
         email: "authz@gmail.com",
         password: "AAaa11!",
-        emailVerification: { create: { code: "a", expiresAt: new Date() } },
+        emailVerification: { create: {} },
       },
       include: { emailVerification: true },
     });

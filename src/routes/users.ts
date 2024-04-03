@@ -13,6 +13,8 @@ import Config from "config";
 import jwt from "jsonwebtoken";
 import getGoogleOAuthTokens from "../utils/getGoogleOAuthTokens";
 import constructErrorResponse from "../utils/constructErrorResponse";
+import sendEmailVerificationLink from "../utils/sendEmailVerificationLink";
+import Joi from "joi";
 
 const router = express.Router();
 
@@ -26,15 +28,12 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
 
   //Creating the user & catching the error if the email is not unique
   let isEmailUnique = true;
-  const code = generateRandomCode();
-  const createdUser = await prisma.user
+  const createdUser = (await prisma.user
     .create({
       data: {
         emailVerification: {
           create: {
             //it runs as a transaction alongside the creation of the user
-            code,
-            expiresAt: expiresAt(),
           },
         },
         ...req.body,
@@ -46,7 +45,7 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
     .catch((err) => {
       if (err.code === "P2002") isEmailUnique = false;
       else throw err;
-    });
+    })) as IUserWithVerification;
   if (!isEmailUnique)
     return res.status(400).json(
       constructErrorResponse(new Error(), {
@@ -57,11 +56,8 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
     );
 
   //Generate the token
-  const accessToken = await generateToken(<IUserWithVerification>createdUser);
-  const refreshToken = await generateToken(
-    <IUserWithVerification>createdUser,
-    true
-  );
+  const accessToken = await generateToken(createdUser);
+  const refreshToken = await generateToken(createdUser, true);
 
   res
     .status(201)
@@ -69,115 +65,89 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
       "x-auth-token": accessToken,
       "x-refresh-token": refreshToken,
     })
-    .json(viewUser(<IUserWithVerification>createdUser));
+    .json(viewUser(createdUser));
 
-  try {
-    await transporter.sendMail({
-      from: Config.get("mailer.email"),
-      to: req.body.email,
-      subject: "Email Verification",
-      html: `
-        <p>
-          Thank you for choosing our service.
-          <br />
-          Your verification code is: <strong>${code}</strong>.
-          <br />
-          Note: it's only valid for 2 hours.
-        </p>`,
-    });
-  } catch (err) {
-    logger.error(err);
-  }
+  // Send an email that contain the email verification link
+  sendEmailVerificationLink(createdUser);
 });
 
-router.post(
-  "/verify-email",
-  [authz, validateReq(validateVerifyEmail, "body")],
-  async (req: Request, res: Response) => {
-    //get the user
-    const user = await prisma.user.findUnique({
-      where: { email: res.locals.user.email },
-      include: { emailVerification: true },
-    });
+router.get("/verify-email", async (req: Request, res: Response) => {
+  const emailVerificationToken = req.query.emailVerificationToken as string;
 
-    if (!user || !user.emailVerification) throw new Error();
+  // Validated the token is it a non-zero length string?
+  if (Joi.string().required().validate(emailVerificationToken).error)
+    return res.redirect(
+      `${Config.get("origin")}/email-validation-error?message=Invalid link!`
+    );
 
-    //This also prevent users who signed-in using Google OAuth from accessing this route
-    if (user.emailVerification.isVerified)
-      return res.status(400).json(
-        constructErrorResponse(new Error(), {
-          message: "Email is already verified.",
-        })
-      );
-
-    //conditions
-    const doesMatch = req.body.code === user.emailVerification.code;
-    const doesExceedExpirationDate =
-      Date.parse(user?.emailVerification.expiresAt.toString()) - Date.now() <=
-      0;
-
-    //handle invalid cases
-    if (doesExceedExpirationDate)
-      return res.status(400).json(
-        constructErrorResponse(new Error(), {
-          code: "The verification code is expired. Please, generate a new one.",
-        })
-      );
-    if (!doesMatch)
-      return res.status(400).json(
-        constructErrorResponse(new Error(), {
-          validation: { code: "The verification code is incorrect." },
-        })
-      );
-
-    //change is valide
-    await prisma.emailVerification.update({
-      where: { id: user.emailVerification.id },
-      data: { isVerified: true },
-    });
-
-    //resonse with new JWT
-    const accessToken = await generateToken({
-      ...user,
-      emailVerification: { ...user.emailVerification, isVerified: true },
-    });
-
-    res.header("x-auth-token", accessToken).json();
+  let userId: number;
+  try {
+    // Verify the token
+    const decoded = jwt.verify(
+      emailVerificationToken,
+      Config.get("emailVerificationJwtPrivateKey")
+    );
+    userId = (decoded as { userId: number }).userId;
+  } catch (err) {
+    return res.redirect(
+      `${Config.get("origin")}/email-validation-error?message=Invalid link!`
+    );
   }
-);
 
-router.post("/regenerate-code", authz, async (req, res) => {
-  const emailVerification = await prisma.emailVerification.findUnique({
-    where: { userId: res.locals.user.id },
+  const user = (await prisma.user.findUnique({
+    where: { id: userId },
+    include: { emailVerification: true },
+  })) as IUserWithVerification;
+
+  // verify that the user exist
+  if (!user)
+    return res.redirect(
+      `${Config.get("origin")}/email-validation-error?message=Invalid link!`
+    );
+
+  // verify that the user is not verified
+  if (user.emailVerification.isVerified)
+    return res.redirect(
+      `${Config.get(
+        "origin"
+      )}/email-validation-error?message=Email is already verified!`
+    );
+
+  // reset the emailVerification
+  await prisma.emailVerification.update({
+    where: { id: user.emailVerification.id },
+    data: { isVerified: true },
   });
 
-  //This also prevent users who signed-in using Google OAuth from accessing this route
-  if (emailVerification?.isVerified)
+  // redirect the user with new access/refresh tokens
+  const updatedUser = {
+    ...user,
+    emailVerification: { isVerified: true },
+  } as IUserWithVerification;
+  const accessToken = await generateToken(updatedUser);
+  const refreshToken = await generateToken(updatedUser, true);
+  res.redirect(
+    `${Config.get(
+      "origin"
+    )}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+  );
+});
+
+router.post("/regenerate-code", authz, async (req, res) => {
+  const user = (await prisma.user.findUnique({
+    where: { id: res.locals.user.id },
+    include: { emailVerification: true },
+  })) as IUserWithVerification;
+
+  //This also prevent users who signed-in using Google OAuth from accessing this route (gmail email is guaranteed to be verified 'cause I checked it)
+  if (user?.emailVerification?.isVerified)
     return res.status(400).json(
       constructErrorResponse(new Error(), {
         message: "Email is already verified.",
       })
     );
 
-  const code = generateRandomCode();
-  await prisma.emailVerification.update({
-    where: { userId: res.locals.user.id },
-    data: { code, expiresAt: expiresAt() },
-  });
-
-  await transporter.sendMail({
-    from: Config.get("mailer.email"),
-    to: res.locals.user.email,
-    subject: "Email Verification",
-    html: `
-        <p>
-          Thank you for choosing our service.
-          <br />
-          Your verification code is: <strong>${code}</strong>.
-          <br />
-          Note: it's only valid for 2 hours.
-        </p>`,
-  });
+  sendEmailVerificationLink(user);
 
   res.json();
 });
@@ -221,7 +191,7 @@ router.get("/oauth/google", async (req, res) => {
         name,
         email,
         emailVerification: {
-          create: { isVerified: true, expiresAt: new Date(), code: "" },
+          create: { isVerified: true },
         },
       }, //weather the client logged in through the app or Google, his email now verified
       include: { emailVerification: true },
