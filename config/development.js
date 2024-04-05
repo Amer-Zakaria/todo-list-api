@@ -1,7 +1,7 @@
 module.exports = {
   name: "Todo List API - development",
   stack: true,
-  accessTokenTtl: 5 * 60, // 5min
+  accessTokenTtl: "2m",
   emailVerificationTokenTtl: "1m",
   origin: "http://localhost:3000",
   apiOrigin: "http://localhost:3001",

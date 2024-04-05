@@ -66,7 +66,7 @@ router.post(
 );
 
 router.post("/token", async (req, res) => {
-  const sentRefreshToken = req.body.refreshToken;
+  const sentRefreshToken = req.headers["x-refresh-token"];
 
   if (!sentRefreshToken) return res.sendStatus(401);
   if (typeof sentRefreshToken !== "string") return res.sendStatus(400);
@@ -98,14 +98,19 @@ router.post("/token", async (req, res) => {
 });
 
 router.delete("/logout", async (req, res) => {
-  const sentRefreshToken = req.body.refreshToken;
+  const sentRefreshToken = req.headers["x-refresh-token"];
 
   if (!sentRefreshToken) return res.sendStatus(401);
   if (typeof sentRefreshToken !== "string") return res.sendStatus(400);
 
-  await prisma.refreshToken.delete({
-    where: { token: sentRefreshToken.trim() },
-  });
+  await prisma.refreshToken
+    .delete({
+      where: { token: sentRefreshToken.trim() },
+    })
+    .catch((err) => {
+      if (err.code === "P2025") return; //if refreshToken is already exists
+      throw err;
+    });
 
   res.sendStatus(204);
 });

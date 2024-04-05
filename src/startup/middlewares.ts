@@ -12,8 +12,8 @@ export default (app: Express) => {
   app.use(
     cors({
       origin: Config.get("origin"),
-      allowedHeaders: ["x-auth-token", "Content-Type"],
-      exposedHeaders: ["x-auth-token"],
+      allowedHeaders: ["x-refresh-token", "x-auth-token", "Content-Type"],
+      exposedHeaders: ["x-auth-token", "x-refresh-token"],
       preflightContinue: true,
       methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
     })

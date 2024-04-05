@@ -4,7 +4,7 @@ module.exports = {
   jwtPrivateKey: "",
   refreshJwtPrivateKey: "",
   emailVerificationJwtPrivateKey: "123456",
-  hitTheServerEvery: "*/14 * * * *",
+  hitTheServerEvery: "*/14 * * * *", //14min since the server spins down every 15min
   accessTokenTtl: 15 * 60, //15min
   emailVerificationTokenTtl: "30m",
   origin: "http://localhost:3000",
