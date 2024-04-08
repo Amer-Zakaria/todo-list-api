@@ -66,14 +66,13 @@ router.post(
 );
 
 router.post("/token", async (req, res) => {
-  const sentRefreshToken = req.headers["x-refresh-token"];
+  const sentRefreshToken = req.headers["x-refresh-token"] as string;
 
   if (!sentRefreshToken) return res.sendStatus(401);
-  if (typeof sentRefreshToken !== "string") return res.sendStatus(400);
 
   //check if the refreshToken is not included in the database
   const refreshTokenObject = await prisma.refreshToken.findUnique({
-    where: { token: sentRefreshToken.trim() },
+    where: { token: sentRefreshToken },
   });
   const refreshToken = refreshTokenObject?.token;
   if (!refreshToken) return res.sendStatus(403);
@@ -98,10 +97,9 @@ router.post("/token", async (req, res) => {
 });
 
 router.delete("/logout", async (req, res) => {
-  const sentRefreshToken = req.headers["x-refresh-token"];
+  const sentRefreshToken = req.headers["x-refresh-token"] as string;
 
   if (!sentRefreshToken) return res.sendStatus(401);
-  if (typeof sentRefreshToken !== "string") return res.sendStatus(400);
 
   await prisma.refreshToken
     .delete({

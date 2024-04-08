@@ -1,11 +1,10 @@
 import express, { Request, Response } from "express";
 import prisma from "../client";
 import validateReq from "../middleware/validateReq";
-import validateUser, { expiresAt, validateVerifyEmail } from "../schemas/user";
+import validateUser from "../schemas/user";
 import bcrypt from "bcrypt";
 import generateToken from "../utils/generateToken";
-import generateRandomCode from "../utils/GenerateRandomCode";
-import { logger, transporter } from "../index";
+import { logger } from "../index";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
 import viewUser from "../utils/viewUser";
 import authz from "../middleware/authz";
@@ -133,7 +132,7 @@ router.get("/verify-email", async (req: Request, res: Response) => {
   );
 });
 
-router.post("/regenerate-code", authz, async (req, res) => {
+router.post("/regenerate-link", authz, async (req, res) => {
   const user = (await prisma.user.findUnique({
     where: { id: res.locals.user.id },
     include: { emailVerification: true },

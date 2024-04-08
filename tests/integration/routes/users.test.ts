@@ -7,8 +7,11 @@ import bcrypt from "bcrypt";
 
 describe("/api/users", () => {
   beforeAll(() => {
-    (transporter.sendMail as jest.Mock) = jest.fn();
+    (transporter.sendMail as jest.Mock) = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve());
   });
+
   afterEach(async () => {
     await prisma.emailVerification.deleteMany();
     await prisma.refreshToken.deleteMany();

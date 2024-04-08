@@ -1,6 +1,7 @@
 {
   "port": 1000,
   "name": "Todo List API - test",
+  "apiOrigin": "http://localhost:1000",
   "stack": true,
   "jwtPrivateKey": "1234",
   "refreshJwtPrivateKey": "12345"

@@ -16,8 +16,6 @@ describe("/api/auth", () => {
   let createdUser: IUserWithVerification;
 
   beforeAll(async () => {
-    (transporter.sendMail as jest.Mock) = jest.fn();
-
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(user.password, salt);
     createdUser = (await prisma.user.create({
@@ -132,7 +130,7 @@ describe("/api/auth", () => {
     const exec = async () => {
       return await request(app)
         .post("/api/auth/token")
-        .send({ refreshToken: testRefreshToken });
+        .set({ "x-refresh-token": testRefreshToken });
     };
 
     beforeAll(async () => {
@@ -150,15 +148,10 @@ describe("/api/auth", () => {
       testRefreshToken = validRefreshToken;
     });
 
-    it("Should return 401 if the refreshToken is null", async () => {
-      (testRefreshToken as any) = null;
+    it("Should return 401 if the refreshToken does't exist", async () => {
+      (testRefreshToken as any) = "";
       const res = await exec();
       expect(res.status).toBe(401);
-    });
-    it("Should return 400 if the refreshToken isn't a string", async () => {
-      (testRefreshToken as any) = 1;
-      const res = await exec();
-      expect(res.status).toBe(400);
     });
     it("Should return 403 if the refreshToken doesn't exist in the database", async () => {
       testRefreshToken = "xXx.xXx.xXx";
@@ -174,47 +167,42 @@ describe("/api/auth", () => {
   });
 
   describe("DELETE /logout", () => {
-    let validRefreshToken: string;
-    let testRefreshToken: string;
+    let refreshToken: string;
 
     const exec = async () => {
       return await request(app)
         .delete("/api/auth/logout")
-        .send({ refreshToken: testRefreshToken });
+        .set({ "x-refresh-token": refreshToken });
     };
 
-    beforeAll(async () => {
-      validRefreshToken = await generateToken(
+    beforeEach(async () => {
+      refreshToken = await generateToken(
         <IUserWithVerification>createdUser,
         true
       );
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
       await prisma.refreshToken.deleteMany();
     });
 
-    beforeEach(async () => {
-      testRefreshToken = validRefreshToken;
-    });
-
-    it("Should return 401 if the refreshToken is null", async () => {
-      (testRefreshToken as any) = null;
+    it("Should return 401 if the refreshToken don't exist", async () => {
+      (refreshToken as any) = "";
       const res = await exec();
       expect(res.status).toBe(401);
     });
-    it("Should return 400 if the refreshToken isn't a string", async () => {
-      (testRefreshToken as any) = 1;
+    it("Should return 204 if the refresh token doesn't exist in the database", async () => {
       const res = await exec();
-      expect(res.status).toBe(400);
+      await prisma.refreshToken.deleteMany();
+      expect(res.status).toBe(204);
     });
     it("Should delete the refresh token if the refreshToken in the request is valid", async () => {
       const res = await exec();
       expect(res.status).toBe(204);
-      const refreshToken = await prisma.refreshToken.findUnique({
-        where: { token: validRefreshToken },
+      const result = await prisma.refreshToken.findUnique({
+        where: { token: refreshToken },
       });
-      expect(refreshToken).toBeNull();
+      expect(result).toBeNull();
     });
   });
 });

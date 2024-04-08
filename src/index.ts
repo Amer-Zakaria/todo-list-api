@@ -10,8 +10,7 @@ import makeLogger from "./startup/logger";
 import makeMiddlewares from "./startup/middlewares";
 import makeRoutes from "./startup/routes";
 import makeMailer from "./startup/mailer";
-import keepTheServerAlive from "./cron";
-import cron from "node-cron";
+import makeServerStayAlive from "./startup/makeServerStayAlive";
 
 const app = express();
 
@@ -22,10 +21,7 @@ makeMiddlewares(app);
 makeRoutes(app);
 export const transporter = makeMailer();
 logger.info(`App Name: ${Config.get("name")}`);
-if (process.env.NODE_ENV === "production")
-  cron.schedule(Config.get("hitTheServerEvery"), () => {
-    keepTheServerAlive();
-  });
+makeServerStayAlive();
 
 //Publishing
 const port = Config.get("port");
