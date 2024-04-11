@@ -70,13 +70,34 @@ router.post("/", validateReq(validateUser, "body"), async (req, res) => {
   sendEmailVerificationLink(createdUser);
 });
 
+router.post("/regenerate-link", authz, async (req, res) => {
+  const user = (await prisma.user.findUnique({
+    where: { id: res.locals.user.id },
+    include: { emailVerification: true },
+  })) as IUserWithVerification;
+
+  //This also prevent users who signed-in using Google OAuth from accessing this route (gmail email is guaranteed to be verified 'cause I checked it)
+  if (user?.emailVerification?.isVerified)
+    return res.status(400).json(
+      constructErrorResponse(new Error(), {
+        message: "Email is already verified.",
+      })
+    );
+
+  sendEmailVerificationLink(user);
+
+  res.json();
+});
+
 router.get("/verify-email", async (req: Request, res: Response) => {
   const emailVerificationToken = req.query.emailVerificationToken as string;
 
   // Validated the token is it a non-zero length string?
   if (Joi.string().required().validate(emailVerificationToken).error)
     return res.redirect(
-      `${Config.get("origin")}/email-validation-error?message=Invalid link!`
+      `${Config.get("origin")}/${Config.get(
+        "emailVerification.errorPathName"
+      )}?message=Invalid link!`
     );
 
   let userId: number;
@@ -84,12 +105,14 @@ router.get("/verify-email", async (req: Request, res: Response) => {
     // Verify the token
     const decoded = jwt.verify(
       emailVerificationToken,
-      Config.get("emailVerificationJwtPrivateKey")
+      Config.get("emailVerification.jwtPrivateKey")
     );
     userId = (decoded as { userId: number }).userId;
   } catch (err) {
     return res.redirect(
-      `${Config.get("origin")}/email-validation-error?message=Invalid link!`
+      `${Config.get("origin")}/${Config.get(
+        "emailVerification.errorPathName"
+      )}?message=Invalid link!`
     );
   }
 
@@ -101,15 +124,17 @@ router.get("/verify-email", async (req: Request, res: Response) => {
   // verify that the user exist
   if (!user)
     return res.redirect(
-      `${Config.get("origin")}/email-validation-error?message=Invalid link!`
+      `${Config.get("origin")}/${Config.get(
+        "emailVerification.errorPathName"
+      )}?message=Invalid link!`
     );
 
   // verify that the user is not verified
   if (user.emailVerification.isVerified)
     return res.redirect(
-      `${Config.get(
-        "origin"
-      )}/email-validation-error?message=Email is already verified!`
+      `${Config.get("origin")}/${Config.get(
+        "emailVerification.errorPathName"
+      )}?message=Email is already verified!`
     );
 
   // reset the emailVerification
@@ -130,25 +155,6 @@ router.get("/verify-email", async (req: Request, res: Response) => {
       "origin"
     )}?accessToken=${accessToken}&refreshToken=${refreshToken}`
   );
-});
-
-router.post("/regenerate-link", authz, async (req, res) => {
-  const user = (await prisma.user.findUnique({
-    where: { id: res.locals.user.id },
-    include: { emailVerification: true },
-  })) as IUserWithVerification;
-
-  //This also prevent users who signed-in using Google OAuth from accessing this route (gmail email is guaranteed to be verified 'cause I checked it)
-  if (user?.emailVerification?.isVerified)
-    return res.status(400).json(
-      constructErrorResponse(new Error(), {
-        message: "Email is already verified.",
-      })
-    );
-
-  sendEmailVerificationLink(user);
-
-  res.json();
 });
 
 router.get("/oauth/google", async (req, res) => {

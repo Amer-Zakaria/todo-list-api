@@ -11,8 +11,6 @@ describe("viewUser", () => {
       emailVerification: {
         id: 1,
         isVerified: true,
-        code: "",
-        expiresAt: new Date(),
         userId: 1,
       },
     };

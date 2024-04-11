@@ -6,6 +6,9 @@
     "db": {
         "uri": "TodoList_DATABASE_URL"
     },
+    "emailVerification": {
+        "jwtPrivateKey": "TodoList_EMAIL_VERIFICATION_JWT_PRIVATE_KEY"
+    },
     "mailer": {
         "emailPass": "TodoList_EMAIL_PASS"
     },

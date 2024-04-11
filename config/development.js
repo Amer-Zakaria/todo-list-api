@@ -2,7 +2,9 @@ module.exports = {
   name: "Todo List API - development",
   stack: true,
   accessTokenTtl: "2m",
-  emailVerificationTokenTtl: "1m",
+  emailVerification: {
+    tokenTtl: "1m",
+  },
   origin: "http://localhost:3000",
   apiOrigin: "http://localhost:3001",
   jwtPrivateKey: "1234",

@@ -6,9 +6,10 @@ import IUserWithVerification from "../interfaces/IUserWithVerification";
 export default function sendEmailVerificationLink(user: IUserWithVerification) {
   const emailVerificationJwt = jwt.sign(
     { userId: user.id },
-    Config.get("emailVerificationJwtPrivateKey") as string,
-    { expiresIn: Config.get("emailVerificationTokenTtl") as string }
+    Config.get("emailVerification.jwtPrivateKey") as string,
+    { expiresIn: Config.get("emailVerification.tokenTtl") as string }
   );
+
   transporter
     .sendMail({
       from: Config.get("mailer.email"),
@@ -23,7 +24,7 @@ export default function sendEmailVerificationLink(user: IUserWithVerification) {
             )}/api/users/verify-email?emailVerificationToken=${emailVerificationJwt}.
             <br />
             Note: it's only valid for ${Config.get(
-              "emailVerificationTokenTtl"
+              "emailVerification.tokenTtl"
             )}.
           </p>`,
     })

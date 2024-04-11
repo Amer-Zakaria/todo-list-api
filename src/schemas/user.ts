@@ -39,11 +39,3 @@ export function validateUserCredentials(userCred: IUserCred) {
 
   return schema.validate(userCred, { abortEarly: false });
 }
-
-export function validateVerifyEmail(userCred: IUserCred) {
-  const schema = Joi.object({
-    code: codeValidation,
-  });
-
-  return schema.validate(userCred, { abortEarly: false });
-}

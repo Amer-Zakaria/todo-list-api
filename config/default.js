@@ -3,10 +3,13 @@ module.exports = {
   port: 3001,
   jwtPrivateKey: "",
   refreshJwtPrivateKey: "",
-  emailVerificationJwtPrivateKey: "123456",
   hitTheServerEvery: "*/14 * * * *", //14min since the server spins down every 15min
   accessTokenTtl: 15 * 60, //15min
-  emailVerificationTokenTtl: "30m",
+  emailVerification: {
+    jwtPrivateKey: "123456",
+    tokenTtl: "30m",
+    errorPathName: "email-validation-error",
+  },
   origin: "http://localhost:3000",
   apiOrigin: "http://localhost:3001",
   mailer: {

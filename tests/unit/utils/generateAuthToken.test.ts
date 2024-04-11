@@ -14,8 +14,6 @@ const user: IUserWithVerification = {
   emailVerification: {
     id: 1,
     isVerified: true,
-    expiresAt: new Date(),
-    code: "",
     userId: 1,
   },
 };
