@@ -5,6 +5,9 @@ module.exports = {
   emailVerification: {
     tokenTtl: "1m",
   },
+  resetPass: {
+    tokenTtl: "1m",
+  },
   origin: "http://localhost:3000",
   apiOrigin: "http://localhost:3001",
   jwtPrivateKey: "1234",

@@ -10,6 +10,10 @@ module.exports = {
     tokenTtl: "30m",
     errorPathName: "email-validation-error",
   },
+  resetPass: {
+    jwtPrivateKey: "1234567",
+    tokenTtl: "30m",
+  },
   origin: "http://localhost:3000",
   apiOrigin: "http://localhost:3001",
   mailer: {

@@ -1,6 +1,6 @@
 import Joi from "joi";
 import IUser from "../interfaces/IUser";
-import { codeValidation, emailValidation, passwordValidation } from "./user";
+import { emailValidation, passwordValidation } from "./user";
 
 export function validateRequestPasswordReset(
   user: IUser
@@ -12,7 +12,9 @@ export function validateRequestPasswordReset(
 
 export function validateResetPassword(user: IUser): Joi.ValidationResult {
   const schema = Joi.object({
-    code: codeValidation,
+    token: Joi.string()
+      .required()
+      .regex(/^[\w-]+\.[\w-]+\.[\w-]+$/),
     newPassword: passwordValidation,
   });
 

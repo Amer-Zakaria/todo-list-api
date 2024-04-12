@@ -237,7 +237,6 @@ describe("/api/users", () => {
         `/api/users/verify-email?emailVerificationToken=${emailVerificationToken}`
       );
 
-    //TODO:
     it("Should redirect to the error page if the provided token isn't a valid string", async () => {
       emailVerificationToken = "";
       const res = await exec();

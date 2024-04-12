@@ -15,12 +15,6 @@ export const passwordValidation = joiPassword
 
 export const emailValidation = Joi.string().min(5).max(255).email().required();
 
-export const codeLength = 6;
-
-export const codeValidation = Joi.string().required().length(codeLength);
-
-export const expiresAt = () => new Date(Date.now() + 2 * 60 * 60 * 1000);
-
 export default function validateUser(user: IUser): Joi.ValidationResult {
   const schema = Joi.object({
     name: Joi.string().min(5).max(255).required(),

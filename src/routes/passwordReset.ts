@@ -1,18 +1,18 @@
 import express from "express";
 import prisma from "../client";
 import validateReq from "../middleware/validateReq";
-import { expiresAt } from "../schemas/user";
 import {
   validateRequestPasswordReset,
   validateResetPassword,
 } from "../schemas/passReset";
-import generateRandomCode from "../utils/GenerateRandomCode";
 import { transporter } from "../index";
 import bcrypt from "bcrypt";
 import Config from "config";
 import constructErrorResponse from "../utils/constructErrorResponse";
 import generateToken from "../utils/generateToken";
 import IUserWithVerification from "../interfaces/IUserWithVerification";
+import jwt from "jsonwebtoken";
+import { logger } from "../index";
 
 const router = express.Router();
 
@@ -53,53 +53,53 @@ router.post(
         })
       );
 
-    //create the rerset password request
-    const code = generateRandomCode();
-    await prisma.resetPasswordRequest.create({
-      data: {
-        email: user.email,
-        code,
-        expiresAt: expiresAt(),
-      },
-    });
+    //create the rerset password JWT
+    const resetPassToken = jwt.sign(
+      { userId: user.id },
+      Config.get("resetPass.jwtPrivateKey") as string,
+      { expiresIn: Config.get("resetPass.tokenTtl") as string }
+    );
 
-    //send an email with the code
-    await transporter.sendMail({
-      from: Config.get("mailer.email"),
-      to: req.body.email,
-      subject: "Reset Password Code",
-      html: `
-        <p>
-          Your reset password code is: <strong>${code}</strong>.
-          <br />
-          Note: it's only valid for 2 hours.
-        </p>`,
-    });
+    //send an email with a reset pass link
+    transporter
+      .sendMail({
+        from: Config.get("mailer.email"),
+        to: user.email,
+        subject: "Your Reset Password Link",
+        html: `
+          <p>
+            Your reset  password link is: ${Config.get(
+              "origin"
+            )}/reset-pass?resetPassToken=${resetPassToken}.
+            <br />
+            Note: it's only valid for ${Config.get("resetPass.tokenTtl")}.
+          </p>`,
+      })
+      .catch((err) => {
+        logger.error(err);
+      });
 
     res.json();
   }
 );
 
-router.post(
+router.put(
   "/",
   validateReq(validateResetPassword, "body"),
   async (req, res) => {
-    //fetish the reset passwrod request
-    const { code, newPassword } = req.body;
-    const resetPasswordRequest = await prisma.resetPasswordRequest.findUnique({
-      where: { code },
-    });
+    const { token, newPassword } = req.body;
 
-    //check if it's valid
-    if (
-      !resetPasswordRequest ||
-      Date.parse(resetPasswordRequest.expiresAt.toString()) - Date.now() <= 0
-    ) {
-      return res.status(400).json(
-        constructErrorResponse(new Error(), {
-          validation: { code: "Invalid or expired reset password code." },
-        })
-      );
+    //cechk if the reset pass token is valid
+    let userId: number;
+    try {
+      const decoded = jwt.verify(token, Config.get("resetPass.jwtPrivateKey"));
+      userId = (decoded as { userId: number }).userId;
+    } catch (err) {
+      return res
+        .status(400)
+        .send(
+          constructErrorResponse(err as Error, { token: "Token is invalid" })
+        );
     }
 
     //Hashing the password
@@ -108,16 +108,17 @@ router.post(
 
     //updating the password
     const user = await prisma.user.update({
-      where: { email: resetPasswordRequest.email },
+      where: { id: userId },
       data: { password: hashedPassword },
       include: { emailVerification: true },
     });
 
-    //removing the request
-    await prisma.resetPasswordRequest.delete({ where: { code } });
-
     const accessToken = await generateToken(<IUserWithVerification>user);
-    res.header("x-auth-token", accessToken).send(accessToken);
+    const refreshToken = await generateToken(<IUserWithVerification>user, true);
+
+    res
+      .set({ "x-auth-token": accessToken, "x-refresh-token": refreshToken })
+      .json();
   }
 );
 

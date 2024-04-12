@@ -11,14 +11,13 @@ datasource db {
 }
 
 model User {
-  id                    Int                    @id @default(autoincrement())
-  email                 String                 @unique
-  name                  String
-  password              String?
-  todos                 Todo[]
-  refreshTokens         RefreshToken[]
-  emailVerification     EmailVerification?
-  ResetPasswordRequests ResetPasswordRequest[]
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  name              String
+  password          String?
+  todos             Todo[]
+  refreshTokens     RefreshToken[]
+  emailVerification EmailVerification?
 }
 
 enum TodoStatus {
@@ -48,12 +47,4 @@ model RefreshToken {
   token  String @unique @db.VarChar(512)
   userId Int
   user   User   @relation(fields: [userId], references: [id])
-}
-
-model ResetPasswordRequest {
-  id        Int      @id @default(autoincrement())
-  email     String
-  code      String   @unique
-  expiresAt DateTime
-  user      User?    @relation(fields: [email], references: [email])
 }

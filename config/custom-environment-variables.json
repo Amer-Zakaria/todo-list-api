@@ -9,6 +9,9 @@
     "emailVerification": {
         "jwtPrivateKey": "TodoList_EMAIL_VERIFICATION_JWT_PRIVATE_KEY"
     },
+    "resetPass": {
+        "jwtPrivateKey": "TodoList_RESET_PASS_JWT_PRIVATE_KEY"
+    },
     "mailer": {
         "emailPass": "TodoList_EMAIL_PASS"
     },
