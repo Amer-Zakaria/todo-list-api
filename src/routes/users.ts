@@ -174,10 +174,10 @@ router.get("/oauth/google", async (req, res) => {
     } = jwt.decode(id_token) as jwt.JwtPayload;
 
     if (isVerifedGoogleEmail) {
-      return res.status(403).send(
-        constructErrorResponse(new Error(), {
-          message: "Google account is not verified",
-        })
+      return res.redirect(
+        `${Config.get("origin")}/${Config.get(
+          "google.errorPathName"
+        )}?message="Your Google account is not verified"`
       );
     }
 
@@ -217,7 +217,11 @@ router.get("/oauth/google", async (req, res) => {
     );
   } catch (error: any) {
     logger.error(error);
-    res.redirect(`${Config.get("origin")}/google-error`);
+    res.redirect(
+      `${Config.get("origin")}/${Config.get(
+        "google.errorPathName"
+      )}?message="Something went wrong while trying to log you in with Google"`
+    );
   }
 });
 
