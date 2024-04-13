@@ -4,6 +4,7 @@ import todos from "../routes/todos";
 import users from "../routes/users";
 import auth from "../routes/auth";
 import resetPassword from "../routes/passwordReset";
+import oauth from "../routes/oauth";
 import Config from "config";
 
 export default (app: Express) => {
@@ -14,6 +15,7 @@ export default (app: Express) => {
   app.use("/api/users", users);
   app.use("/api/auth", auth);
   app.use("/api/reset-password", resetPassword);
+  app.use("/api/oauth", resetPassword);
 
   app.use(error);
 };

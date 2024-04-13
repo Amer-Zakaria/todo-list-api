@@ -27,5 +27,6 @@ module.exports = {
     redirectUri: "http://localhost:3001/api/users/oauth/google",
     clientId: "",
     clientSecret: "",
+    errorPathName: "google-error",
   },
 };
