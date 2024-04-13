@@ -24,12 +24,11 @@ router.get("/google", async (req, res) => {
       name,
       verified_email: isVerifedGoogleEmail,
     } = jwt.decode(id_token) as jwt.JwtPayload;
-
-    if (isVerifedGoogleEmail) {
+    if (!isVerifedGoogleEmail) {
       return res.redirect(
         `${Config.get("origin")}/${Config.get(
           "google.errorPathName"
-        )}?message="Your Google account is not verified"`
+        )}?message=Your Google account is not verified`
       );
     }
 
@@ -72,7 +71,7 @@ router.get("/google", async (req, res) => {
     res.redirect(
       `${Config.get("origin")}/${Config.get(
         "google.errorPathName"
-      )}?message="Something went wrong while trying to log you in with Google"`
+      )}?message=Something went wrong while trying to log you in with Google`
     );
   }
 });
