@@ -22,8 +22,9 @@ router.get("/google", async (req, res) => {
     const {
       email,
       name,
-      verified_email: isVerifedGoogleEmail,
+      email_verified: isVerifedGoogleEmail,
     } = jwt.decode(id_token) as jwt.JwtPayload;
+
     if (!isVerifedGoogleEmail) {
       return res.redirect(
         `${Config.get("origin")}/${Config.get(

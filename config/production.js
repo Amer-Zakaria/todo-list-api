@@ -5,7 +5,6 @@ module.exports = {
   apiOrigin: "https://todo-list-api-ml1b.onrender.com",
   stack: false,
   google: {
-    redirectUri:
-      "https://todo-list-api-ml1b.onrender.com/api/users/oauth/google",
+    redirectUri: "https://todo-list-api-ml1b.onrender.com/api/oauth/google",
   },
 };
