@@ -98,7 +98,9 @@ router.put(
       return res
         .status(400)
         .send(
-          constructErrorResponse(err as Error, { token: "Token is invalid" })
+          constructErrorResponse(err as Error, {
+            validation: { token: "Token is invalid" },
+          })
         );
     }
 
