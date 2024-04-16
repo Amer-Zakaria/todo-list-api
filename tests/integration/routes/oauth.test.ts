@@ -18,7 +18,7 @@ describe("/api/oauth", () => {
       (jwt.decode as jest.Mock) = jest.fn().mockImplementation(() => ({
         name: "a",
         email: "g@gmail.com",
-        verified_email: true,
+        email_verified: true,
       }));
     });
 
@@ -36,7 +36,7 @@ describe("/api/oauth", () => {
       (jwt.decode as jest.Mock) = jest.fn().mockImplementation(() => ({
         name: "a",
         email: "g@gmail.com",
-        verified_email: false,
+        email_verified: false,
       }));
       const res = await exec();
       expect(res.status).toBe(302);
