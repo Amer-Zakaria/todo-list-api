@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import prisma from "../client";
 import validateReq from "../middleware/validateReq";
@@ -9,6 +9,10 @@ import extractErrorMessagesJOI from "../utils/extractErrorMessagesJOI";
 import authz from "../middleware/authz";
 import owner from "../middleware/owner";
 import constructErrorResponse from "../utils/constructErrorResponse";
+import EventEmitter from "events";
+import todoUpdatedEmitter from "../utils/todoUpdatedEmitter";
+
+export const todoUpdatedEvent = new EventEmitter();
 
 const router = express.Router();
 
@@ -26,13 +30,22 @@ router.get("/", authz, async (req, res) => {
   res.json(todos);
 });
 
-router.post("/", authz, validateReq(validateTodo, "body"), async (req, res) => {
-  const todo = await prisma.todo.create({
-    data: { userId: res.locals.user.id, ...req.body },
-  });
+router.post(
+  "/",
+  authz,
+  validateReq(validateTodo, "body"),
+  async (req, res, next) => {
+    const todo = await prisma.todo.create({
+      data: { userId: res.locals.user.id, ...req.body },
+    });
 
-  res.status(201).json(todo);
-});
+    res.status(201).json(todo);
+    todoUpdatedEmitter({
+      userId: res.locals.user.id,
+      socketId: req.headers["socket-id"],
+    });
+  }
+);
 
 router.patch(
   "/:id",
@@ -44,6 +57,10 @@ router.patch(
     });
 
     res.status(200).json(todo);
+    todoUpdatedEmitter({
+      userId: res.locals.user.id,
+      socketId: req.headers["socket-id"],
+    });
   }
 );
 
@@ -75,6 +92,10 @@ router.patch(
     });
 
     res.status(200).json(todo);
+    todoUpdatedEmitter({
+      userId: res.locals.user.id,
+      socketId: req.headers["socket-id"],
+    });
   }
 );
 
@@ -87,6 +108,10 @@ router.delete(
     });
 
     res.status(200).json(todo);
+    todoUpdatedEmitter({
+      userId: res.locals.user.id,
+      socketId: req.headers["socket-id"],
+    });
   }
 );
 
