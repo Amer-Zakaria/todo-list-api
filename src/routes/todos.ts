@@ -74,14 +74,11 @@ router.patch(
       .valid(...todoStatus);
     const validationResult = todoStatusSchema.validate(req.params.status);
     if (validationResult.error) {
-      return res
-        .status(400)
-        .json(
-          constructErrorResponse(
-            new Error(),
-            extractErrorMessagesJOI(validationResult.error)
-          )
-        );
+      return res.status(400).json(
+        constructErrorResponse(new Error(), {
+          validation: extractErrorMessagesJOI(validationResult.error),
+        })
+      );
     }
 
     const todo = await prisma.todo.update({

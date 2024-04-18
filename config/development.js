@@ -13,6 +13,6 @@ module.exports = {
   jwtPrivateKey: "1234",
   refreshJwtPrivateKey: "12345",
   google: {
-    redirectUri: "http://localhost:3001/api/users/oauth/google",
+    redirectUri: "http://localhost:3001/api/oauth/google",
   },
 };
