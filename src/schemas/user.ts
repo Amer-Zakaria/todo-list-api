@@ -6,10 +6,9 @@ const joiPassword = Joi.extend(joiPasswordExtendCore);
 
 export const passwordValidation = joiPassword
   .string()
-  .minOfSpecialCharacters(1)
-  .minOfLowercase(2)
-  .minOfUppercase(2)
+  .min(8)
   .minOfNumeric(2)
+  .onlyLatinCharacters()
   .noWhiteSpaces()
   .required();
 

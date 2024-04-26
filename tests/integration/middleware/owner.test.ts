@@ -3,6 +3,14 @@ import app from "../../../src";
 import generateToken from "../../../src/utils/generateToken";
 import prisma from "../../../src/client";
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
+import {
+  describe,
+  expect,
+  afterAll,
+  beforeAll,
+  beforeEach,
+  it,
+} from "@jest/globals";
 
 describe("Auth middleware", () => {
   let user: any;

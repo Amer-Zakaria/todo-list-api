@@ -1,5 +1,6 @@
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 import viewUser from "../../../src/utils/viewUser";
+import { describe, expect, it } from "@jest/globals";
 
 describe("viewUser", () => {
   it("Should return just allowed user properties to view", () => {

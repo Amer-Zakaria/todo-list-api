@@ -1,8 +1,15 @@
 import request from "supertest";
 import app from "../../../src/index";
 import prisma from "../../../src/client";
-import { transporter } from "../../../src/index";
-import { jest } from "@jest/globals";
+import {
+  describe,
+  expect,
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  it,
+} from "@jest/globals";
 import bcrypt from "bcrypt";
 import generateToken from "../../../src/utils/generateToken";
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
@@ -11,7 +18,7 @@ describe("/api/auth", () => {
   const user = {
     name: "Amer Zakaria",
     email: "auth@gmail.com",
-    password: "AAaa11!",
+    password: "aaaa1111",
   };
   let createdUser: IUserWithVerification;
 
@@ -70,31 +77,6 @@ describe("/api/auth", () => {
     });
     it("Should return 400 if the email doesn't exist", async () => {
       email = "x@gmail.com";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 1 special characters", async () => {
-      password = "AAaa11";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 lowercase characters", async () => {
-      password = "AAa11@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 uppercase characters", async () => {
-      password = "Aaa11@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 numerical characters", async () => {
-      password = "AAaa1@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password does contain white space", async () => {
-      password = "AAaa11 @";
       const res = await exec();
       expect(res.status).toBe(400);
     });

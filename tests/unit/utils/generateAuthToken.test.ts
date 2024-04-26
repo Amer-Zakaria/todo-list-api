@@ -3,7 +3,7 @@ import Config from "config";
 import generateToken from "./../../../src/utils/generateToken";
 import IUserWithVerification from "./../../../src/interfaces/IUserWithVerification";
 import viewUser from "../../../src/utils/viewUser";
-import { jest } from "@jest/globals";
+import { jest, describe, expect, it } from "@jest/globals";
 import prisma from "../../../src/client";
 
 const user: IUserWithVerification = {

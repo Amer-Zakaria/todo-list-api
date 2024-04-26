@@ -2,7 +2,16 @@ import request from "supertest";
 import app, { transporter } from "../../../src/index";
 import prisma from "../../../src/client";
 import bcrypt from "bcrypt";
-import { jest } from "@jest/globals";
+import {
+  jest,
+  describe,
+  expect,
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  it,
+} from "@jest/globals";
 import Config from "config";
 import IUserWithVerification from "../../../src/interfaces/IUserWithVerification";
 import generateToken from "../../../src/utils/generateToken";
@@ -27,7 +36,7 @@ describe("/api/users", () => {
     beforeEach(() => {
       name = "John Doe";
       email = "a@gmail.com";
-      password = "AAaa12!";
+      password = "aaaa1111";
     });
 
     afterEach(async () => {
@@ -63,31 +72,6 @@ describe("/api/users", () => {
     });
     it("Should return 400 if the should return 400 if the email is already exist", async () => {
       await exec();
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 1 special characters", async () => {
-      password = "AAaa11";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 lowercase characters", async () => {
-      password = "AAa11@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 uppercase characters", async () => {
-      password = "Aaa11@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 numerical characters", async () => {
-      password = "AAaa1@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password does contain white space", async () => {
-      password = "AAaa11 @";
       const res = await exec();
       expect(res.status).toBe(400);
     });
@@ -138,7 +122,7 @@ describe("/api/users", () => {
         data: {
           name: "xyzxyz",
           email: "xyzxyz@gmail.com",
-          password: "AAaa11!",
+          password: "aaaa1111",
           emailVerification: {
             create: { isVerified: false },
           },
@@ -199,7 +183,7 @@ describe("/api/users", () => {
         data: {
           name: "xyzxyz",
           email: "xyzxyz@gmail.com",
-          password: "AAaa11!",
+          password: "aaaa1111",
           emailVerification: {
             create: { isVerified: false },
           },

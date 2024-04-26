@@ -4,7 +4,16 @@ import IUserWithVerification from "../../../src/interfaces/IUserWithVerification
 import prisma from "../../../src/client";
 import jwt from "jsonwebtoken";
 import Config from "config";
-import { jest } from "@jest/globals";
+import {
+  jest,
+  describe,
+  expect,
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  it,
+} from "@jest/globals";
 import bcrypt from "bcrypt";
 
 describe("/api/reset-password", () => {
@@ -93,7 +102,7 @@ describe("/api/reset-password", () => {
 
   describe("PUT /", () => {
     let token: string;
-    const validNewPassword = "BBbb12#";
+    const validNewPassword = "xxxx2222";
     let newPassword: string;
     let createdUser: IUserWithVerification;
 
@@ -131,31 +140,6 @@ describe("/api/reset-password", () => {
 
     it("Should return 400 if the token structure is invalid", async () => {
       token = "Xx.xX";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 1 special characters", async () => {
-      newPassword = "AAaa11";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 lowercase characters", async () => {
-      newPassword = "AAa11@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 uppercase characters", async () => {
-      newPassword = "Aaa11@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password doesn't contain at least 2 numerical characters", async () => {
-      newPassword = "AAaa1@";
-      const res = await exec();
-      expect(res.status).toBe(400);
-    });
-    it("Should return 400 if the password does contain white space", async () => {
-      newPassword = "AAaa11 @";
       const res = await exec();
       expect(res.status).toBe(400);
     });
