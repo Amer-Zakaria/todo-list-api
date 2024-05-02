@@ -11,10 +11,14 @@ import makeMiddlewares from "./startup/middlewares";
 import makeRoutes from "./startup/routes";
 import makeMailer from "./startup/mailer";
 import makeServerStayAlive from "./startup/makeServerStayAlive";
+import http from "http";
+import makeSocket from "./startup/socket";
 
 const app = express();
+const server = http.createServer(app);
 
 //Startups
+export const io = makeSocket(server);
 export const logger = makeLogger();
 makeValidation();
 makeMiddlewares(app);
@@ -26,7 +30,7 @@ makeServerStayAlive();
 //Publishing
 const port = Config.get("port");
 if (process.env.NODE_ENV !== "test") {
-  app.listen(port, () =>
+  server.listen(port, () =>
     logger.info(
       `\nOk, we start listing at port ${port}, any incoming requests?!`
     )
