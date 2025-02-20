@@ -9,10 +9,7 @@ import extractErrorMessagesJOI from "../utils/extractErrorMessagesJOI";
 import authz from "../middleware/authz";
 import owner from "../middleware/owner";
 import constructErrorResponse from "../utils/constructErrorResponse";
-import EventEmitter from "events";
 import todoUpdatedEmitter from "../utils/todoUpdatedEmitter";
-
-export const todoUpdatedEvent = new EventEmitter();
 
 const router = express.Router();
 

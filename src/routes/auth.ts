@@ -106,7 +106,7 @@ router.delete("/logout", async (req, res) => {
       where: { token: sentRefreshToken.trim() },
     })
     .catch((err) => {
-      if (err.code === "P2025") return; //if refreshToken is already exists
+      if (err.code === "P2025") return; //if refreshToken doesn't exists
       throw err;
     });
 
