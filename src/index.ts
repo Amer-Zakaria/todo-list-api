@@ -25,7 +25,7 @@ makeMiddlewares(app);
 makeRoutes(app);
 export const transporter = makeMailer();
 logger.info(`App Name: ${Config.get("name")}`);
-makeServerStayAlive();
+// makeServerStayAlive();
 
 //Publishing
 const port = Config.get("port");
